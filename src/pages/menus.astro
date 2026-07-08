@@ -5,13 +5,13 @@ import ServiceCard from '@/components/ServiceCard.astro';
 import CTA from '@/components/CTA.astro';
 import { services } from '@/data/site';
 ---
-<BaseLayout title="鑑定メニュー" description="復縁占い、相手の気持ち鑑定、恋愛総合セッションなど、ルビー瞳の鑑定メニュー一覧。">
+<BaseLayout title="鑑定メニュー" description="相手の気持ち鑑定、復縁リーディング、恋愛総合セッション、メール鑑定など、ルビー瞳の鑑定メニュー一覧。">
   <Breadcrumbs items={[{ label: '鑑定メニュー' }]} />
   <section class="section pt-6">
     <div class="container">
       <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">鑑定メニュー</h1>
-      <p class="mt-4 max-w-2xl text-[color:var(--muted)]">電話占い、Zoom鑑定、メール鑑定に対応。恋愛の状況に合わせてお選びいただけます。</p>
-      <div class="mt-8 grid gap-5 md:grid-cols-3">
+      <p class="mt-4 max-w-2xl text-[color:var(--muted)]">電話、Zoom、メールからお選びいただけます。予約時に相談内容を簡単にご記入いただくと、鑑定がより深まります。</p>
+      <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {services.map((service) => <ServiceCard {...service} />)}
       </div>
     </div>

@@ -1,22 +1,26 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CTA from '@/components/CTA.astro';
 ---
-<BaseLayout title="占術紹介" description="ルビー瞳が使用するタロット占いとルノルマンカード鑑定の特徴を紹介します。">
+<BaseLayout title="占術紹介" description="ルビー瞳の占術紹介。タロット占いとルノルマンカードで恋愛、復縁、相手の気持ちを多面的に読み解きます。">
   <Breadcrumbs items={[{ label: '占術紹介' }]} />
   <section class="section pt-6">
     <div class="container">
       <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">占術紹介</h1>
       <div class="mt-8 grid gap-5 md:grid-cols-2">
         <article class="glass rounded-[8px] p-6">
-          <h2 class="font-serif text-2xl font-bold">タロット占い</h2>
-          <p class="mt-3 text-[color:var(--muted)]">心の奥にある迷い、相手の気持ち、関係の流れを読み解くことに向いています。復縁や片思いなど、感情が複雑に絡む相談で力を発揮します。</p>
+          <p class="text-sm font-bold tracking-[0.18em] text-gold">TAROT</p>
+          <h2 class="mt-2 font-serif text-3xl font-bold">タロット占い</h2>
+          <p class="mt-4 text-[color:var(--muted)]">現在の気持ち、障害、未来の流れ、取るべき行動を読み解きます。復縁や片思いなど、感情の揺れが大きいご相談に向いています。</p>
         </article>
         <article class="glass rounded-[8px] p-6">
-          <h2 class="font-serif text-2xl font-bold">ルノルマンカード</h2>
-          <p class="mt-3 text-[color:var(--muted)]">現実的な状況、行動のヒント、近い未来の流れを具体的に見る占術です。タロットと組み合わせることで、気持ちと行動の両面を確認します。</p>
+          <p class="text-sm font-bold tracking-[0.18em] text-gold">LENORMAND</p>
+          <h2 class="mt-2 font-serif text-3xl font-bold">ルノルマンカード</h2>
+          <p class="mt-4 text-[color:var(--muted)]">状況や人間関係のつながりを具体的に読みやすいカードです。相手の行動傾向、連絡の可能性、現実的なタイミングを見ます。</p>
         </article>
       </div>
     </div>
   </section>
+  <CTA />
 </BaseLayout>

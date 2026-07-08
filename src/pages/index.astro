@@ -5,11 +5,11 @@ import ServiceCard from '@/components/ServiceCard.astro';
 import BlogCard from '@/components/BlogCard.astro';
 import CTA from '@/components/CTA.astro';
 import { getCollection } from 'astro:content';
-import { services, testimonials, site } from '@/data/site';
+import { services, specialties, testimonials, site } from '@/data/site';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 ---
-<BaseLayout title="恋愛・復縁占いのルビー瞳" description="復縁占い、相手の気持ち、片思い、不倫、結婚に寄り添うタロット・ルノルマン鑑定。鑑定実績6000件以上のルビー瞳公式サイト。">
+<BaseLayout title="恋愛・復縁占いのルビー瞳" description="復縁占い、相手の気持ち、片思い、不倫、結婚の悩みに寄り添うタロット・ルノルマン鑑定。鑑定歴6年、6000件以上の実績を持つルビー瞳の公式サイト。">
   <section class="relative overflow-hidden">
     <div class="container grid min-h-[calc(100svh-112px)] items-center gap-10 py-10 md:grid-cols-[1.05fr_0.95fr]">
       <div>
@@ -35,10 +35,8 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueO
   <section class="section bg-white/35 dark:bg-white/5">
     <div class="container">
       <SectionTitle eyebrow="SPECIALTY" title="恋の状況を、責めずにほどく鑑定" text="複雑な関係や言葉にしづらい気持ちも、安心してお話しください。カードの結果を現実的な行動に落とし込みます。" />
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {['復縁', '相手の気持ち', '片思い', '不倫', 'ツインレイ', '結婚', '仕事', '人間関係'].map((item) => (
-          <div class="glass rounded-[8px] p-5 text-center font-bold">{item}</div>
-        ))}
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {specialties.map((item) => <div class="glass rounded-[8px] p-5 text-center font-bold">{item}</div>)}
       </div>
     </div>
   </section>
@@ -46,7 +44,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueO
   <section class="section">
     <div class="container">
       <SectionTitle eyebrow="MENU" title="人気の鑑定メニュー" text="電話鑑定、Zoom鑑定、メール鑑定に対応。STORES予約からカード決済が可能です。" />
-      <div class="grid gap-5 md:grid-cols-3">
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {services.map((service) => <ServiceCard {...service} />)}
       </div>
     </div>

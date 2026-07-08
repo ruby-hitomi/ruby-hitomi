@@ -33,7 +33,7 @@ const defaultSchema = {
   image: imageUrl,
   description: site.description,
   areaServed: '日本',
-  serviceType: ['恋愛占い', '復縁占い', 'タロット占い', 'ルノルマンカード鑑定'],
+  serviceType: ['恋愛占い', '復縁占い', 'タロット占い', 'ルノルマンカード鑑定', '電話占い'],
   sameAs: Object.values(site.socials)
 };
 ---
@@ -63,7 +63,7 @@ const defaultSchema = {
         document.documentElement.classList.add('dark');
       }
     </script>
-    <script type="application/ld+json" set:html={JSON.stringify(schema ?? defaultSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema ?? defaultSchema)} />
   </head>
   <body>
     <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2" href="#main">本文へ移動</a>

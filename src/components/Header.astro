@@ -3,7 +3,7 @@ import { navItems, site } from '@/data/site';
 ---
 <header class="sticky top-0 z-40 border-b border-[var(--line)] bg-[color:var(--bg)]/88 backdrop-blur-xl">
   <div class="container flex min-h-16 items-center justify-between gap-4">
-    <a href="/" class="flex items-center gap-3 font-serif text-xl font-bold tracking-normal text-ruby dark:text-blush" aria-label="ルビー瞳 トップへ">
+    <a href="/" class="flex items-center gap-3 font-serif text-xl font-bold text-ruby dark:text-blush" aria-label="ルビー瞳 トップへ">
       <span class="grid size-10 place-items-center rounded-full bg-ruby text-sm text-white shadow-glass">瞳</span>
       <span>ルビー瞳</span>
     </a>
@@ -11,7 +11,7 @@ import { navItems, site } from '@/data/site';
       {navItems.map((item) => <a class="transition hover:text-ruby dark:hover:text-blush" href={item.href}>{item.label}</a>)}
     </nav>
     <div class="flex items-center gap-2">
-      <button id="themeToggle" class="grid size-10 place-items-center rounded-full border border-[var(--line)] bg-white/55 text-ruby dark:bg-white/10 dark:text-blush" type="button" aria-label="ダークモード切り替え">◐</button>
+      <button id="themeToggle" class="grid size-10 place-items-center rounded-full border border-[var(--line)] bg-white/55 text-ruby dark:bg-white/10 dark:text-blush" type="button" aria-label="ダークモードを切り替える">◐</button>
       <a class="hidden rounded-full bg-ruby px-4 py-2 text-sm font-bold text-white shadow-glass transition hover:bg-wine sm:inline-flex" href={site.bookingUrl}>予約する</a>
     </div>
   </div>

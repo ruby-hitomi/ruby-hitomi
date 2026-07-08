@@ -12,6 +12,7 @@ const categories = [...new Set(posts.map((post) => post.data.category))];
   <section class="section pt-6">
     <div class="container">
       <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">ブログ</h1>
+      <p class="mt-4 max-w-2xl text-[color:var(--muted)]">恋に迷ったとき、気持ちを整えるためのコラムを更新しています。カテゴリ、タグ、関連記事を増やしやすい構造です。</p>
       <div class="mt-5 flex flex-wrap gap-2">
         {categories.map((category) => <span class="rounded-full border border-[var(--line)] px-3 py-1 text-sm text-[color:var(--muted)]">{category}</span>)}
       </div>

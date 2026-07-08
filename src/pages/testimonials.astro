@@ -1,16 +1,18 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CTA from '@/components/CTA.astro';
 import { testimonials } from '@/data/site';
 ---
-<BaseLayout title="お客様の声" description="ルビー瞳の鑑定を受けたお客様の声。優しい、丁寧、安心できる鑑定への評価。">
+<BaseLayout title="お客様の声" description="ルビー瞳の恋愛占い、復縁占い、相手の気持ち鑑定に寄せられたお客様の声。">
   <Breadcrumbs items={[{ label: 'お客様の声' }]} />
   <section class="section pt-6">
     <div class="container">
       <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">お客様の声</h1>
-      <div class="mt-8 grid gap-4 md:grid-cols-3">
+      <div class="mt-8 grid gap-5 md:grid-cols-3">
         {testimonials.map((voice) => <blockquote class="glass rounded-[8px] p-6 text-[color:var(--muted)]">“{voice}”</blockquote>)}
       </div>
     </div>
   </section>
+  <CTA />
 </BaseLayout>

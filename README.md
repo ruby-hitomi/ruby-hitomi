@@ -23,7 +23,7 @@ pnpm build
 
 ## 公開前に差し替える項目
 
-- `src/data/site.ts` の公式LINE、STORES予約、SNS、メールアドレス
+- `src/data/site.ts` のLINE、STORES予約、SNS、メールアドレス
 - `astro.config.mjs` と `src/data/site.ts` の本番ドメイン
 - `src/pages/tokushoho.astro` の事業者情報、所在地、電話番号、キャンセル規定
 - 実際のお客様の声、ココナラ評価の引用可否、プロフィール画像
