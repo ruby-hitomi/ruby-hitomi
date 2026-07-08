@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+---
+<BaseLayout title="利用規約" description="ルビー瞳公式サイトおよび鑑定サービスの利用規約。">
+  <Breadcrumbs items={[{ label: '利用規約' }]} />
+  <section class="section pt-6"><div class="container max-w-3xl prose-ruby">
+    <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">利用規約</h1>
+    <p>本サービスは占い鑑定および相談サポートを目的とします。医療、法律、投資、合否、生死に関する断定的判断は行いません。</p>
+    <h2>禁止事項</h2><p>第三者への迷惑行為、鑑定内容の無断転載、虚偽情報による予約を禁止します。</p>
+    <h2>キャンセル</h2><p>キャンセルや日程変更は予約システム上の規定に従います。</p>
+  </div></section>
+</BaseLayout>

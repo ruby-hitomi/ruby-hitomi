@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="32" fill="#9b1d3d"/>
+  <circle cx="64" cy="64" r="38" fill="#fffaf7" opacity=".92"/>
+  <path d="M64 28c15 20 24 30 24 43a24 24 0 0 1-48 0c0-13 9-23 24-43z" fill="#b9893b"/>
+  <text x="64" y="77" text-anchor="middle" font-size="38" font-family="serif" fill="#9b1d3d">瞳</text>
+</svg>

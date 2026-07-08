@@ -1,0 +1,17 @@
+{
+  "name": "ルビー瞳 公式サイト",
+  "short_name": "ルビー瞳",
+  "description": "恋愛・復縁占いのルビー瞳公式サイト",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffaf7",
+  "theme_color": "#9b1d3d",
+  "icons": [
+    {
+      "src": "/assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionTitle from '@/components/SectionTitle.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import BlogCard from '@/components/BlogCard.astro';
+import CTA from '@/components/CTA.astro';
+import { getCollection } from 'astro:content';
+import { services, testimonials, site } from '@/data/site';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+---
+<BaseLayout title="恋愛・復縁占いのルビー瞳" description="復縁占い、相手の気持ち、片思い、不倫、結婚に寄り添うタロット・ルノルマン鑑定。鑑定実績6000件以上のルビー瞳公式サイト。">
+  <section class="relative overflow-hidden">
+    <div class="container grid min-h-[calc(100svh-112px)] items-center gap-10 py-10 md:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <p class="text-sm font-bold tracking-[0.18em] text-gold">LOVE TAROT & LENORMAND</p>
+        <h1 class="mt-4 font-serif text-4xl font-bold leading-tight text-ruby dark:text-blush md:text-6xl">ルビー瞳</h1>
+        <p class="mt-5 max-w-xl text-lg text-[color:var(--muted)]">復縁、相手の気持ち、片思い、不倫、結婚。言えない恋の不安に、優しく丁寧に寄り添うオンライン占い鑑定です。</p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass transition hover:bg-wine" href={site.bookingUrl}>鑑定を予約する</a>
+          <a class="rounded-full border border-[var(--line)] bg-white/60 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href="/menus/">メニューを見る</a>
+        </div>
+        <dl class="mt-10 grid grid-cols-3 gap-3 text-center">
+          <div class="glass rounded-[8px] p-3"><dt class="text-xs text-[color:var(--muted)]">占い師歴</dt><dd class="font-serif text-2xl font-bold">6年</dd></div>
+          <div class="glass rounded-[8px] p-3"><dt class="text-xs text-[color:var(--muted)]">鑑定実績</dt><dd class="font-serif text-2xl font-bold">6000+</dd></div>
+          <div class="glass rounded-[8px] p-3"><dt class="text-xs text-[color:var(--muted)]">専門</dt><dd class="font-serif text-2xl font-bold">恋愛</dd></div>
+        </dl>
+      </div>
+      <div class="float-soft">
+        <img class="mx-auto w-full max-w-[520px]" src="/assets/hero-ruby-hitomi.svg" width="720" height="720" alt="タロットカードとルビー色の光をあしらったルビー瞳のビジュアル" loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white/35 dark:bg-white/5">
+    <div class="container">
+      <SectionTitle eyebrow="SPECIALTY" title="恋の状況を、責めずにほどく鑑定" text="複雑な関係や言葉にしづらい気持ちも、安心してお話しください。カードの結果を現実的な行動に落とし込みます。" />
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {['復縁', '相手の気持ち', '片思い', '不倫', 'ツインレイ', '結婚', '仕事', '人間関係'].map((item) => (
+          <div class="glass rounded-[8px] p-5 text-center font-bold">{item}</div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionTitle eyebrow="MENU" title="人気の鑑定メニュー" text="電話鑑定、Zoom鑑定、メール鑑定に対応。STORES予約からカード決済が可能です。" />
+      <div class="grid gap-5 md:grid-cols-3">
+        {services.map((service) => <ServiceCard {...service} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white/35 dark:bg-white/5">
+    <div class="container grid gap-8 md:grid-cols-[0.8fr_1.2fr]">
+      <div>
+        <p class="text-sm font-bold tracking-[0.18em] text-gold">VOICE</p>
+        <h2 class="mt-2 font-serif text-3xl font-bold text-ruby dark:text-blush">安心できる、話しやすいという声を大切にしています</h2>
+      </div>
+      <div class="grid gap-4">
+        {testimonials.map((voice) => <blockquote class="glass rounded-[8px] p-5 text-[color:var(--muted)]">“{voice}”</blockquote>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionTitle eyebrow="BLOG" title="恋愛占いコラム" text="復縁占い、相手の気持ち、タロット占い、ルノルマンのSEO記事を積み上げられるブログ構造です。" />
+      <div class="grid gap-5 md:grid-cols-3">
+        {posts.map((post) => <BlogCard href={`/blog/${post.slug}/`} title={post.data.title} description={post.data.description} category={post.data.category} pubDate={post.data.pubDate} />)}
+      </div>
+    </div>
+  </section>
+  <CTA />
+</BaseLayout>

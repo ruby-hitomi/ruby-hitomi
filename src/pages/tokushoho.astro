@@ -1,0 +1,14 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+---
+<BaseLayout title="特定商取引法に基づく表記" description="ルビー瞳公式サイトの特定商取引法に基づく表記。">
+  <Breadcrumbs items={[{ label: '特定商取引法に基づく表記' }]} />
+  <section class="section pt-6"><div class="container max-w-3xl prose-ruby">
+    <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">特定商取引法に基づく表記</h1>
+    <p>販売事業者、所在地、電話番号、販売価格、支払方法、キャンセルポリシー等は、正式公開前に実情報へ差し替えてください。</p>
+    <h2>販売価格</h2><p>各鑑定メニューに表示された税込価格。</p>
+    <h2>支払方法</h2><p>STORES予約によるカード決済。将来的にPayPay、Stripe、Squareに対応予定です。</p>
+    <h2>役務の提供時期</h2><p>予約日時またはメール鑑定の案内に基づき提供します。</p>
+  </div></section>
+</BaseLayout>

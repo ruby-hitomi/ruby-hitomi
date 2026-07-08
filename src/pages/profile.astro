@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CTA from '@/components/CTA.astro';
+---
+<BaseLayout title="プロフィール" description="恋愛・復縁相談を得意とする占い師ルビー瞳のプロフィール。占い師歴6年、鑑定実績6000件以上。">
+  <Breadcrumbs items={[{ label: 'プロフィール' }]} />
+  <section class="section pt-6">
+    <div class="container grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
+      <img class="glass w-full rounded-[8px] p-4" src="/assets/profile-ruby-hitomi.svg" alt="ルビー瞳のプロフィールを象徴するカードと花のビジュアル" width="640" height="720" />
+      <div>
+        <p class="text-sm font-bold tracking-[0.18em] text-gold">PROFILE</p>
+        <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">占い師 ルビー瞳</h1>
+        <p class="mt-5 text-[color:var(--muted)]">タロットとルノルマンカードを用い、恋愛・復縁・相手の気持ちを中心に鑑定しています。占い師歴6年、鑑定実績は6000件以上。ココナラでも高評価をいただいてきました。</p>
+        <p class="mt-4 text-[color:var(--muted)]">鑑定で大切にしているのは、結果をただ伝えることではなく、相談者さまが自分の心を責めずに、次の一歩を選べる状態に整えることです。</p>
+        <div class="mt-8 grid gap-3 sm:grid-cols-3">
+          {['優しい', '丁寧', '安心できる'].map((item) => <div class="glass rounded-[8px] p-4 text-center font-bold">{item}</div>)}
+        </div>
+      </div>
+    </div>
+  </section>
+  <CTA />
+</BaseLayout>

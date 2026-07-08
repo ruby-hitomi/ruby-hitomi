@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+---
+<BaseLayout title="プライバシーポリシー" description="ルビー瞳公式サイトのプライバシーポリシー。">
+  <Breadcrumbs items={[{ label: 'プライバシーポリシー' }]} />
+  <section class="section pt-6"><div class="container max-w-3xl prose-ruby">
+    <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">プライバシーポリシー</h1>
+    <p>取得した個人情報は、鑑定予約、連絡、サービス改善、法令対応のために利用します。本人の同意なく第三者へ提供しません。ただし法令に基づく場合を除きます。</p>
+    <h2>取得する情報</h2><p>氏名、メールアドレス、予約情報、相談内容、決済に必要な情報。</p>
+    <h2>お問い合わせ</h2><p>個人情報に関するお問い合わせは公式LINEまたはメールにてご連絡ください。</p>
+  </div></section>
+</BaseLayout>

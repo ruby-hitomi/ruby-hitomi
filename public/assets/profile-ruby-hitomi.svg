@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="720" viewBox="0 0 640 720" role="img" aria-label="カードと花のプロフィールビジュアル">
+  <rect width="640" height="720" rx="32" fill="#fffaf7"/>
+  <circle cx="320" cy="250" r="150" fill="#f8dfe5"/>
+  <path d="M320 120c70 80 110 135 110 200a110 110 0 0 1-220 0c0-65 40-120 110-200z" fill="#9b1d3d" opacity=".86"/>
+  <circle cx="320" cy="326" r="70" fill="#b9893b"/>
+  <g transform="translate(150 458)">
+    <rect width="140" height="190" rx="18" fill="#512135" transform="rotate(-7 70 95)"/>
+    <rect x="18" y="18" width="104" height="154" rx="12" fill="#fffaf7" transform="rotate(-7 70 95)"/>
+    <rect x="190" width="140" height="190" rx="18" fill="#9b1d3d" transform="rotate(7 260 95)"/>
+    <rect x="208" y="18" width="104" height="154" rx="12" fill="#fffaf7" transform="rotate(7 260 95)"/>
+  </g>
+  <path d="M70 610c90-60 390-70 500 0" fill="none" stroke="#b9893b" stroke-width="7" stroke-linecap="round"/>
+</svg>

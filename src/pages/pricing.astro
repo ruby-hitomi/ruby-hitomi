@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CTA from '@/components/CTA.astro';
+---
+<BaseLayout title="料金" description="ルビー瞳の占い鑑定料金。STORES予約からカード決済に対応し、将来的にPayPay、Stripe、Squareへ拡張予定。">
+  <Breadcrumbs items={[{ label: '料金' }]} />
+  <section class="section pt-6">
+    <div class="container">
+      <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">料金</h1>
+      <div class="mt-8 overflow-hidden rounded-[8px] border border-[var(--line)]">
+        <table class="w-full border-collapse bg-white/55 text-left dark:bg-white/5">
+          <thead class="bg-blush/60 dark:bg-ruby/25">
+            <tr><th class="p-4">メニュー</th><th class="p-4">時間</th><th class="p-4">料金</th></tr>
+          </thead>
+          <tbody class="[&_td]:border-t [&_td]:border-[var(--line)] [&_td]:p-4">
+            <tr><td>相手の気持ち鑑定</td><td>30分</td><td>4,400円</td></tr>
+            <tr><td>復縁リーディング</td><td>45分</td><td>6,600円</td></tr>
+            <tr><td>恋愛総合セッション</td><td>70分</td><td>9,900円</td></tr>
+            <tr><td>メール鑑定</td><td>3往復目安</td><td>5,500円</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-sm text-[color:var(--muted)]">お支払いはSTORES予約のカード決済に対応。PayPay、Stripe、Squareは将来拡張しやすい導線設計にしています。</p>
+    </div>
+  </section>
+  <CTA />
+</BaseLayout>
