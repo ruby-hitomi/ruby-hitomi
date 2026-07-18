@@ -2,6 +2,8 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import CTA from '@/components/CTA.astro';
+
+const specialties = ['お相手のお気持ち', 'お二人の今後', '片思い', '復縁', '複雑恋愛 など'];
 ---
 <BaseLayout title="プロフィール" description="恋愛・復縁専門の占い師ルビー瞳のプロフィール。鑑定歴6年、鑑定実績6000件以上、タロットとルノルマンカードで丁寧に寄り添います。">
   <Breadcrumbs items={[{ label: 'プロフィール' }]} />
@@ -11,14 +13,56 @@ import CTA from '@/components/CTA.astro';
       <div>
         <p class="text-sm font-bold tracking-[0.18em] text-gold">PROFILE</p>
         <h1 class="mt-3 font-serif text-4xl font-bold text-ruby dark:text-blush">ルビー瞳</h1>
-        <p class="mt-5 text-[color:var(--muted)]">占い師歴6年、鑑定実績6000件以上。タロットとルノルマンカードを通して、恋愛、復縁、相手の気持ち、片思い、不倫、結婚、人間関係のお悩みに寄り添ってきました。</p>
-        <p class="mt-4 text-[color:var(--muted)]">大切にしているのは、ただ結果を伝えるだけではなく、不安でいっぱいの心を少しずつほどきながら、今の状況を一緒に整理していくことです。安心して話せる空気の中で、これからどう動けばよいかを丁寧にお伝えします。</p>
-        <p class="mt-4 text-[color:var(--muted)]">ひとりで抱え込みやすい恋の悩みだからこそ、責めずに、急かさず、その方の気持ちに寄り添う鑑定を心がけています。鑑定のあとに「少し前を向けた」と感じていただける時間をお届けできたらうれしいです。</p>
+        <p class="mt-5 text-lg text-[color:var(--muted)]">「誰かの力になりたい。」その想いを原点に、一人ひとりの心に寄り添う鑑定をお届けしています。</p>
         <dl class="mt-8 grid gap-3 sm:grid-cols-3">
           <div class="glass rounded-[8px] p-4"><dt class="text-sm text-[color:var(--muted)]">鑑定歴</dt><dd class="font-serif text-2xl font-bold">6年</dd></div>
           <div class="glass rounded-[8px] p-4"><dt class="text-sm text-[color:var(--muted)]">実績</dt><dd class="font-serif text-2xl font-bold">6000件以上</dd></div>
           <div class="glass rounded-[8px] p-4"><dt class="text-sm text-[color:var(--muted)]">得意分野</dt><dd class="font-serif text-2xl font-bold">恋愛</dd></div>
         </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid gap-6">
+      <div class="glass rounded-[8px] p-6 md:p-8">
+        <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">占いを始めたきっかけ</h2>
+        <div class="mt-4 grid gap-4 text-[color:var(--muted)]">
+          <p>家にいる時間が多かった頃、スピリチュアルが好きな母からタロットカードをプレゼントされたことが、占いとの出会いでした。</p>
+          <p>当時はカードの意味も分からないまま手に取っていましたが、タロットならではの偶然性や、美しい絵柄に心を惹かれたことを今でも覚えています。</p>
+          <p>カードを一枚一枚学びながら、少しずつ占いの奥深さと魅力に触れ、「もっと知りたい」という気持ちが自然と大きくなっていきました。</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-[8px] p-6 md:p-8">
+        <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">大切にしていること</h2>
+        <div class="mt-4 grid gap-4 text-[color:var(--muted)]">
+          <p>私にとって「誰かの力になりたい」という思いは、人生を通して大切にしているテーマです。</p>
+          <p>家で過ごす時間が多かった頃、SNSを通してたくさんの方を無償で占っていました。最初は解説本を見ながらの鑑定でしたが、「前向きになれました」「もう少し頑張ってみようと思います」といった温かいお言葉をいただき、私自身も前向きな気持ちになれたことで、今日まで占いを続けてくることができました。これまでご縁をいただいた皆さまには、感謝の気持ちでいっぱいです。</p>
+          <p>現在も、ご相談者様の不安や迷いに寄り添い、心が少しでも軽くなるような優しい鑑定を心がけています。</p>
+          <p>また、良い結果だけをお伝えする「上げ鑑定」はしておりません。望まない結果が出た場合でも、その先にどう活かせるのか、少しでも前向きな気持ちになれるようなメッセージを添えてお伝えしています。</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-[8px] p-6 md:p-8">
+        <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">得意なご相談内容</h2>
+        <p class="mt-4 text-[color:var(--muted)]">恋愛に関するご相談を中心に鑑定しております。</p>
+        <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {specialties.map((item) => <div class="rounded-[8px] border border-[var(--line)] bg-white/55 px-4 py-3 font-bold text-ruby dark:bg-white/5 dark:text-blush">{item}</div>)}
+        </div>
+        <p class="mt-5 text-[color:var(--muted)]">「優しい鑑定士様で安心しました」「いつも的確なメッセージをありがとうございます」「丁寧に鑑定していただきました」といったお声をいただくことも多く、お一人おひとりのお気持ちに寄り添うことを何より大切にしています。</p>
+      </div>
+
+      <div class="glass rounded-[8px] p-6 md:p-8">
+        <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">お客様へ伝えたいこと</h2>
+        <div class="mt-4 grid gap-4 text-[color:var(--muted)]">
+          <p>「こんなことで相談してもいいのかな」と、一人で抱え込んでしまう必要はありません。</p>
+          <p>まずは、お話だけでもお聞かせください。</p>
+          <p>誰かと悩みを共有することで、心が少し軽くなったり、新しい見方や気づきが生まれたりすることがあります。</p>
+          <p>私は、お客様のお人柄やお気持ちを大切にしながら、その方がすっと受け止められる言葉に乗せて鑑定結果をお届けしたいと考えています。</p>
+          <p>安心して悩みを打ち明けられる存在でありたい。</p>
+          <p>鑑定を終えたあと、「少し前向きになれた」「相談して良かった」と感じていただけたら、それ以上に嬉しいことはありません。</p>
+        </div>
       </div>
     </div>
   </section>
