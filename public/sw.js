@@ -1,5 +1,5 @@
 const CACHE_NAME = 'ruby-hitomi-v1';
-const CORE_ASSETS = ['/', '/site.webmanifest', '/assets/hero-ruby-hitomi.svg'];
+const CORE_ASSETS = ['/', '/site.webmanifest', '/assets/hero-ruby-hitomi.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)));
