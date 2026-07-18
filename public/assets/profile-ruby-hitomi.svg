@@ -1,13 +1,66 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="720" viewBox="0 0 640 720" role="img" aria-label="カードと花のプロフィールビジュアル">
-  <rect width="640" height="720" rx="32" fill="#fffaf7"/>
-  <circle cx="320" cy="250" r="150" fill="#f8dfe5"/>
-  <path d="M320 120c70 80 110 135 110 200a110 110 0 0 1-220 0c0-65 40-120 110-200z" fill="#9b1d3d" opacity=".86"/>
-  <circle cx="320" cy="326" r="70" fill="#b9893b"/>
-  <g transform="translate(150 458)">
-    <rect width="140" height="190" rx="18" fill="#512135" transform="rotate(-7 70 95)"/>
-    <rect x="18" y="18" width="104" height="154" rx="12" fill="#fffaf7" transform="rotate(-7 70 95)"/>
-    <rect x="190" width="140" height="190" rx="18" fill="#9b1d3d" transform="rotate(7 260 95)"/>
-    <rect x="208" y="18" width="104" height="154" rx="12" fill="#fffaf7" transform="rotate(7 260 95)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="720" viewBox="0 0 640 720" role="img" aria-label="ルビー瞳の鑑定スタイルを表現したタロットカードビジュアル">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#fffaf7"/>
+      <stop offset="1" stop-color="#f6dfe7"/>
+    </linearGradient>
+    <linearGradient id="mainCard" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#fffefd"/>
+      <stop offset="1" stop-color="#fae8ee"/>
+    </linearGradient>
+    <linearGradient id="accentCard" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#58203a"/>
+      <stop offset="1" stop-color="#9b1d3d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#eddcb2"/>
+      <stop offset="1" stop-color="#b9893b"/>
+    </linearGradient>
+    <radialGradient id="ruby" cx="50%" cy="44%" r="54%">
+      <stop stop-color="#ffd6df"/>
+      <stop offset=".52" stop-color="#c03a5e"/>
+      <stop offset="1" stop-color="#5b1a30"/>
+    </radialGradient>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="160%">
+      <feDropShadow dx="0" dy="26" stdDeviation="24" flood-color="#472030" flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <rect width="640" height="720" rx="32" fill="url(#bg)"/>
+  <circle cx="320" cy="252" r="156" fill="#ffffff" opacity=".58"/>
+  <circle cx="320" cy="252" r="122" fill="#f8dfe5" opacity=".8"/>
+
+  <g filter="url(#shadow)">
+    <g transform="rotate(-8 164 536)">
+      <rect x="88" y="412" width="152" height="220" rx="18" fill="url(#accentCard)"/>
+      <rect x="102" y="426" width="124" height="192" rx="12" fill="none" stroke="url(#gold)" stroke-width="2.5"/>
+      <rect x="116" y="440" width="96" height="164" rx="10" fill="#5f1f39" opacity=".5" stroke="#d8ba73" stroke-width="1.5"/>
+      <path d="M164 478c18 18 28 33 28 50a28 28 0 0 1-56 0c0-17 10-32 28-50z" fill="none" stroke="#eedfb2" stroke-width="2"/>
+      <circle cx="164" cy="564" r="28" fill="none" stroke="#eedfb2" stroke-width="2"/>
+    </g>
+
+    <g transform="rotate(8 476 528)">
+      <rect x="400" y="412" width="152" height="220" rx="18" fill="#431426"/>
+      <rect x="414" y="426" width="124" height="192" rx="12" fill="none" stroke="url(#gold)" stroke-width="2.5"/>
+      <rect x="428" y="440" width="96" height="164" rx="10" fill="#562033" opacity=".5" stroke="#d8ba73" stroke-width="1.5"/>
+      <circle cx="476" cy="498" r="22" fill="none" stroke="#eedfb2" stroke-width="2"/>
+      <path d="M450 552c14-14 31-22 50-22s36 8 50 22c-14 14-31 22-50 22s-36-8-50-22z" transform="translate(-24 0)" fill="none" stroke="#eedfb2" stroke-width="2"/>
+    </g>
+
+    <g>
+      <rect x="178" y="118" width="284" height="396" rx="26" fill="url(#mainCard)"/>
+      <rect x="194" y="134" width="252" height="364" rx="20" fill="none" stroke="url(#gold)" stroke-width="4"/>
+      <rect x="214" y="154" width="212" height="324" rx="18" fill="#fffaf7" stroke="#d6b46b" stroke-width="1.5"/>
+      <path d="M246 190h148M246 444h148" stroke="#c79f50" stroke-linecap="round"/>
+      <circle cx="320" cy="214" r="16" fill="none" stroke="#b9893b" stroke-width="2"/>
+      <path d="M320 198v32M304 214h32" stroke="#b9893b" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="320" cy="320" r="84" fill="url(#ruby)"/>
+      <circle cx="320" cy="320" r="66" fill="none" stroke="#f6e8c3" stroke-width="3"/>
+      <path d="M320 252c28 32 44 56 44 84a44 44 0 0 1-88 0c0-28 16-52 44-84z" fill="none" stroke="#f8ebcb" stroke-width="3"/>
+      <path d="M282 382c11-8 24-12 38-12s27 4 38 12c-10 19-23 29-38 29s-28-10-38-29z" fill="#f6e8c3" opacity=".22" stroke="#f6e8c3" stroke-width="2"/>
+      <path d="M276 430c13 12 28 18 44 18s31-6 44-18" fill="none" stroke="#b9893b" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
   </g>
-  <path d="M70 610c90-60 390-70 500 0" fill="none" stroke="#b9893b" stroke-width="7" stroke-linecap="round"/>
+
+  <path d="M92 646c112-52 346-58 456 0" fill="none" stroke="#c79f50" stroke-width="7" stroke-linecap="round" opacity=".56"/>
 </svg>
