@@ -33,3 +33,27 @@ pnpm build
 - ブログ記事: `src/content/blog/*.md`
 - 鑑定メニュー: `src/data/site.ts`
 - AIチャット、AI占い、会員機能: `/contact/` や `/booking/` の導線から段階導入
+
+## アクセス解析の設定
+
+Cloudflare Pages の `Settings` → `Environment variables` で以下を設定してください。
+
+| 変数名 | 用途 | 例 |
+| --- | --- | --- |
+| `PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` | Cloudflare Web Analytics の Site token | `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 の測定ID | `G-4XTSPYTHR7` |
+| `PUBLIC_CLARITY_PROJECT_ID` | Microsoft Clarity の Project ID | `xxxxxxxxxx` |
+
+設定後に再デプロイすると、全ページに Cloudflare Web Analytics、GA4、Microsoft Clarity のタグが出力されます。未設定の変数がある場合、そのサービスのタグだけ出力されません。
+
+GA4 では以下のイベントをクリック時に送信します。
+
+| 計測内容 | GA4イベント名 |
+| --- | --- |
+| LINE登録クリック | `line_click` |
+| STORES予約クリック | `stores_booking_click` |
+| 電話鑑定クリック | `phone_reading_click` |
+| Zoom鑑定クリック | `zoom_reading_click` |
+| お問い合わせクリック | `contact_click` |
+
+イベントには `link_text`、`link_url`、`page_path` も付与します。ただし `mailto:` のURL、氏名、メールアドレス、相談内容などの個人情報は送信しません。GA4のリアルタイムレポートまたは DebugView で公開直後に発火確認できます。

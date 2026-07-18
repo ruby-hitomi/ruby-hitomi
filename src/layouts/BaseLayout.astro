@@ -36,6 +36,13 @@ const defaultSchema = {
   serviceType: ['恋愛占い', '復縁占い', 'タロット占い', 'ルノルマンカード鑑定', '電話占い'],
   sameAs: Object.values(site.socials)
 };
+
+const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+const cloudflareWebAnalyticsToken = import.meta.env.PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN;
+const clarityProjectId = import.meta.env.PUBLIC_CLARITY_PROJECT_ID;
+const cloudflareBeaconConfig = cloudflareWebAnalyticsToken
+  ? JSON.stringify({ token: cloudflareWebAnalyticsToken })
+  : undefined;
 ---
 <!doctype html>
 <html lang="ja">
@@ -56,6 +63,50 @@ const defaultSchema = {
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={imageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
+    {
+      gaMeasurementId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
+          <script is:inline define:vars={{ gaMeasurementId }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', gaMeasurementId);
+          </script>
+        </>
+      )
+    }
+    {
+      cloudflareBeaconConfig && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={cloudflareBeaconConfig}
+        />
+      )
+    }
+    {
+      clarityProjectId && (
+        <script is:inline define:vars={{ clarityProjectId }}>
+          (function (c, l, a, r, i, t, y) {
+            c[a] =
+              c[a] ||
+              function () {
+                (c[a].q = c[a].q || []).push(arguments);
+              };
+            t = l.createElement(r);
+            t.async = 1;
+            t.src = 'https://www.clarity.ms/tag/' + i;
+            y = l.getElementsByTagName(r)[0];
+            y.parentNode.insertBefore(t, y);
+          })(window, document, 'clarity', 'script', clarityProjectId);
+        </script>
+      )
+    }
     <script is:inline>
       const savedTheme = localStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -73,6 +124,37 @@ const defaultSchema = {
     </main>
     <Footer />
     <script is:inline>
+      const trackGaEvent = (eventName, params = {}) => {
+        if (typeof window.gtag !== 'function') {
+          return;
+        }
+
+        window.gtag('event', eventName, {
+          event_category: 'engagement',
+          ...params
+        });
+      };
+
+      document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element ? event.target.closest('[data-ga-event]') : null;
+        if (!target) {
+          return;
+        }
+
+        const eventName = target.dataset.gaEvent;
+        if (!eventName) {
+          return;
+        }
+
+        const linkUrl = target instanceof HTMLAnchorElement ? target.href : undefined;
+
+        trackGaEvent(eventName, {
+          link_text: target.textContent?.trim() ?? '',
+          link_url: linkUrl?.startsWith('mailto:') ? undefined : linkUrl,
+          page_path: window.location.pathname
+        });
+      });
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
       }

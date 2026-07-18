@@ -12,7 +12,7 @@ import { navItems, site } from '@/data/site';
     </nav>
     <div class="flex items-center gap-2">
       <button id="themeToggle" class="grid size-10 place-items-center rounded-full border border-[var(--line)] bg-white/55 text-ruby dark:bg-white/10 dark:text-blush" type="button" aria-label="ダークモードを切り替える">◐</button>
-      <a class="hidden rounded-full bg-ruby px-4 py-2 text-sm font-bold text-white shadow-glass transition hover:bg-wine sm:inline-flex" href={site.bookingUrl}>予約する</a>
+      <a class="hidden rounded-full bg-ruby px-4 py-2 text-sm font-bold text-white shadow-glass transition hover:bg-wine sm:inline-flex" href={site.bookingUrl} data-ga-event="stores_booking_click">予約する</a>
     </div>
   </div>
   <nav class="container flex gap-3 overflow-x-auto pb-3 text-sm text-[color:var(--muted)] lg:hidden" aria-label="モバイルナビゲーション">

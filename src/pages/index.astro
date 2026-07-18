@@ -17,7 +17,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueO
         <h1 class="mt-4 font-serif text-4xl font-bold leading-tight text-ruby dark:text-blush md:text-6xl">ルビー瞳</h1>
         <p class="mt-5 max-w-xl text-lg text-[color:var(--muted)]">復縁、相手の気持ち、片思い、不倫、結婚。言えない恋の不安に、優しく丁寧に寄り添うオンライン占い鑑定です。</p>
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass transition hover:bg-wine" href={site.bookingUrl}>鑑定を予約する</a>
+          <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass transition hover:bg-wine" href={site.bookingUrl} data-ga-event="stores_booking_click">鑑定を予約する</a>
           <a class="rounded-full border border-[var(--line)] bg-white/60 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href="/menus/">メニューを見る</a>
         </div>
         <dl class="mt-10 grid grid-cols-3 gap-3 text-center">

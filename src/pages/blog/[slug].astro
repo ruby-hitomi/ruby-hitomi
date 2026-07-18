@@ -46,7 +46,7 @@ const schema = {
         </div>
         <div class="mt-8 flex flex-wrap gap-2 text-sm">
           <a class="rounded-full bg-ruby px-4 py-2 text-white" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.data.title)}`}>Xでシェア</a>
-          <a class="rounded-full border border-[var(--line)] px-4 py-2" href={site.lineUrl}>LINEで相談</a>
+          <a class="rounded-full border border-[var(--line)] px-4 py-2" href={site.lineUrl} data-ga-event="line_click">LINEで相談</a>
         </div>
         <div class="prose-ruby mt-10 max-w-none">
           <Content />

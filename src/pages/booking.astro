@@ -14,9 +14,12 @@ const steps = ['メニューを選ぶ', 'STORES予約で日時を選択', 'カ�
         {steps.map((step, index) => <div class="glass rounded-[8px] p-5"><p class="text-sm font-bold text-gold">STEP {index + 1}</p><p class="mt-2 font-bold">{step}</p></div>)}
       </div>
       <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass" href={site.bookingUrl}>STORES予約へ進む</a>
-        <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.lineUrl}>LINEで質問する</a>
+        <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass" href={site.bookingUrl} data-ga-event="stores_booking_click">STORES予約へ進む</a>
+        <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.lineUrl} data-ga-event="line_click">LINEで質問する</a>
+        <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.bookingUrl} data-ga-event="phone_reading_click">電話鑑定を予約</a>
+        <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.bookingUrl} data-ga-event="zoom_reading_click">Zoom鑑定を予約</a>
       </div>
+      <p class="mt-4 text-sm text-[color:var(--muted)]">Zoom鑑定は顔出しなし、カメラOFFでのご参加でも大丈夫です。</p>
     </div>
   </section>
   <CTA />

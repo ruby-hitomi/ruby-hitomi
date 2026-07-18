@@ -11,8 +11,8 @@ import { site } from '@/data/site';
         <h1 class="font-serif text-4xl font-bold text-ruby dark:text-blush">お問い合わせ</h1>
         <p class="mt-4 text-[color:var(--muted)]">鑑定前のご質問、取材、コラボ、SNS関連のご相談はLINEまたはメールでご連絡ください。</p>
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass" href={site.lineUrl}>LINE公式へ</a>
-          <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={`mailto:${site.email}`}>{site.email}</a>
+          <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass" href={site.lineUrl} data-ga-event="line_click">LINE公式へ</a>
+          <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={`mailto:${site.email}`} data-ga-event="contact_click">メールで問い合わせる</a>
         </div>
       </div>
       <aside class="glass rounded-[8px] p-6">
