@@ -1,4 +1,4 @@
-﻿{
+{
     "$schema":  "./node_modules/wrangler/config-schema.json",
     "name":  "ruby-hitomi",
     "compatibility_date":  "2026-07-08",
@@ -22,5 +22,11 @@
                          }
                      ],
     "workers_dev":  true,
-    "preview_urls":  true
+    "preview_urls":  true,
+    "routes":  [
+                   {
+                       "zone_name":  "fortunestudios.jp",
+                       "pattern":  "ruby-hitomi.fortunestudios.jp/*"
+                   }
+               ]
 }
