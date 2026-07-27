@@ -18,10 +18,7 @@ type D1PreparedStatement = {
 };
 
 type LineWebhookBody = {
-  events?: Array<{
-    type?: string;
-    replyToken?: string;
-  }>;
+  events?: Array<{ type?: string; replyToken?: string }>;
 };
 
 const headers = {
@@ -37,7 +34,6 @@ const jsonResponse = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { ...headers, 'content-type': 'application/json; charset=utf-8' } });
 
 const createId = () => crypto.randomUUID();
-
 const sanitizeText = (value: unknown, maxLength: number) =>
   String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, maxLength);
 
@@ -76,18 +72,13 @@ const isAuthorized = (request: Request) => {
   const separatorIndex = decoded.indexOf(':');
   if (separatorIndex < 0) return false;
 
-  const user = decoded.slice(0, separatorIndex);
-  const password = decoded.slice(separatorIndex + 1);
-  return user === adminUser && password === adminPassword;
+  return decoded.slice(0, separatorIndex) === adminUser && decoded.slice(separatorIndex + 1) === adminPassword;
 };
 
 const timingSafeEqual = (left: Uint8Array, right: Uint8Array) => {
   if (left.length !== right.length) return false;
-
   let diff = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    diff |= left[index] ^ right[index];
-  }
+  for (let index = 0; index < left.length; index += 1) diff |= left[index] ^ right[index];
   return diff === 0;
 };
 
@@ -126,7 +117,7 @@ const replyToLine = async (replyToken: string, env: Env) => {
     },
     body: JSON.stringify({
       replyToken,
-      messages: [{ type: 'text', text: 'メッセージを受信しました' }]
+      messages: [{ type: 'text', text: '\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u53d7\u4fe1\u3057\u307e\u3057\u305f' }]
     })
   });
 
@@ -173,12 +164,12 @@ const buildAnalyticsDraftFallback = (data: {
   nextAction: string;
 }) => {
   const strongest = [
-    { label: '予約クリック率', rate: data.bookingRate },
-    { label: 'LINEクリック率', rate: data.lineRate },
-    { label: 'メニュー閲覧率', rate: data.menuRate }
+    { label: '\u4e88\u7d04\u30af\u30ea\u30c3\u30af\u7387', rate: data.bookingRate },
+    { label: 'LINE\u30af\u30ea\u30c3\u30af\u7387', rate: data.lineRate },
+    { label: '\u30e1\u30cb\u30e5\u30fc\u95b2\u89a7\u7387', rate: data.menuRate }
   ].sort((a, b) => b.rate - a.rate)[0];
 
-  return `${data.periodLabel}のアクセス解析サマリーです。訪問数は${data.visits.toLocaleString('ja-JP')}件、予約クリックは${data.bookingClicks.toLocaleString('ja-JP')}件（${formatPercent(data.bookingRate)}）、LINEクリックは${data.lineClicks.toLocaleString('ja-JP')}件（${formatPercent(data.lineRate)}）、メニュー閲覧は${data.menuViews.toLocaleString('ja-JP')}件（${formatPercent(data.menuRate)}）でした。\n\nもっとも反応が出ている指標は${strongest.label}です。一方で、次の改善では「${data.nextAction}」を優先します。次回は、トップページから鑑定メニューへの遷移、予約ボタンのクリック、LINE導線の反応を見比べて、予約に近い行動が増えているか確認してください。`;
+  return `${data.periodLabel}\u306e\u30a2\u30af\u30bb\u30b9\u89e3\u6790\u30b5\u30de\u30ea\u30fc\u3067\u3059\u3002\u8a2a\u554f\u6570\u306f${data.visits.toLocaleString('ja-JP')}\u4ef6\u3001\u4e88\u7d04\u30af\u30ea\u30c3\u30af\u306f${data.bookingClicks.toLocaleString('ja-JP')}\u4ef6\uff08${formatPercent(data.bookingRate)}\uff09\u3001LINE\u30af\u30ea\u30c3\u30af\u306f${data.lineClicks.toLocaleString('ja-JP')}\u4ef6\uff08${formatPercent(data.lineRate)}\uff09\u3001\u30e1\u30cb\u30e5\u30fc\u95b2\u89a7\u306f${data.menuViews.toLocaleString('ja-JP')}\u4ef6\uff08${formatPercent(data.menuRate)}\uff09\u3067\u3057\u305f\u3002\n\n\u3082\u3063\u3068\u3082\u53cd\u5fdc\u304c\u51fa\u3066\u3044\u308b\u6307\u6a19\u306f${strongest.label}\u3067\u3059\u3002\u4e00\u65b9\u3067\u3001\u6b21\u306e\u6539\u5584\u3067\u306f\u300c${data.nextAction}\u300d\u3092\u512a\u5148\u3057\u307e\u3059\u3002\u6b21\u56de\u306f\u3001\u30c8\u30c3\u30d7\u30da\u30fc\u30b8\u304b\u3089\u9451\u5b9a\u30e1\u30cb\u30e5\u30fc\u3078\u306e\u9077\u79fb\u3001\u4e88\u7d04\u30dc\u30bf\u30f3\u306e\u30af\u30ea\u30c3\u30af\u3001LINE\u5c0e\u7dda\u306e\u53cd\u5fdc\u3092\u898b\u6bd4\u3079\u3066\u3001\u4e88\u7d04\u306b\u8fd1\u3044\u884c\u52d5\u304c\u5897\u3048\u3066\u3044\u308b\u304b\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044\u3002`;
 };
 
 const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
@@ -206,7 +197,7 @@ const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
   const lineClicks = toSafeNumber(body.lineClicks);
   const menuViews = toSafeNumber(body.menuViews);
   const data = {
-    periodLabel: sanitizeText(body.periodLabel, 80) || '今回の期間',
+    periodLabel: sanitizeText(body.periodLabel, 80) || '\u4eca\u56de\u306e\u671f\u9593',
     visits,
     bookingClicks,
     lineClicks,
@@ -214,13 +205,12 @@ const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
     bookingRate: visits ? bookingClicks / visits : Number(body.bookingRate ?? 0) || 0,
     lineRate: visits ? lineClicks / visits : Number(body.lineRate ?? 0) || 0,
     menuRate: visits ? menuViews / visits : Number(body.menuRate ?? 0) || 0,
-    nextAction: sanitizeText(body.nextAction, 240) || '予約につながる導線を見直します。'
+    nextAction: sanitizeText(body.nextAction, 240) || '\u4e88\u7d04\u306b\u3064\u306a\u304c\u308b\u5c0e\u7dda\u3092\u898b\u76f4\u3057\u307e\u3059\u3002'
   };
 
   if (!visits) {
     return jsonResponse({
-      draft:
-        'まだ十分なアクセスデータがないため、AIサマリーは下書き段階です。まずは訪問数、予約クリック、LINEクリック、鑑定メニュー閲覧の数値を集め、予約につながる導線を確認してください。',
+      draft: '\u307e\u3060\u5341\u5206\u306a\u30a2\u30af\u30bb\u30b9\u30c7\u30fc\u30bf\u304c\u306a\u3044\u305f\u3081\u3001AI\u30b5\u30de\u30ea\u30fc\u306f\u4e0b\u66f8\u304d\u6bb5\u968e\u3067\u3059\u3002\u307e\u305a\u306f\u8a2a\u554f\u6570\u3001\u4e88\u7d04\u30af\u30ea\u30c3\u30af\u3001LINE\u30af\u30ea\u30c3\u30af\u3001\u9451\u5b9a\u30e1\u30cb\u30e5\u30fc\u95b2\u89a7\u306e\u6570\u5024\u3092\u96c6\u3081\u3001\u4e88\u7d04\u306b\u3064\u306a\u304c\u308b\u5c0e\u7dda\u3092\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
       source: 'fallback'
     });
   }
@@ -231,17 +221,14 @@ const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Bearer ${env.OPENAI_API_KEY}`
-      },
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${env.OPENAI_API_KEY}` },
       body: JSON.stringify({
         model: env.OPENAI_MODEL || 'gpt-4o-mini',
         temperature: 0.4,
         messages: [
           {
             role: 'system',
-            content: 'あなたは恋愛占い師の公式サイトを改善するWebマーケターです。アクセス解析データを読み解き、管理画面の下書きメモとしてそのまま貼れる日本語文を作ります。断定しすぎず、数字、解釈、次の一手を簡潔にまとめてください。'
+            content: '\u3042\u306a\u305f\u306f\u604b\u611b\u5360\u3044\u5e2b\u306e\u516c\u5f0f\u30b5\u30a4\u30c8\u3092\u6539\u5584\u3059\u308bWeb\u30de\u30fc\u30b1\u30bf\u30fc\u3067\u3059\u3002\u30a2\u30af\u30bb\u30b9\u89e3\u6790\u30c7\u30fc\u30bf\u3092\u8aad\u307f\u89e3\u304d\u3001\u7ba1\u7406\u753b\u9762\u306e\u4e0b\u66f8\u304d\u30e1\u30e2\u3068\u3057\u3066\u305d\u306e\u307e\u307e\u8cbc\u308c\u308b\u65e5\u672c\u8a9e\u6587\u3092\u4f5c\u308a\u307e\u3059\u3002\u65ad\u5b9a\u3057\u3059\u304e\u305a\u3001\u6570\u5b57\u3001\u89e3\u91c8\u3001\u6b21\u306e\u4e00\u624b\u3092\u7c21\u6f54\u306b\u307e\u3068\u3081\u3066\u304f\u3060\u3055\u3044\u3002'
           },
           {
             role: 'user',
@@ -255,7 +242,7 @@ const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
               menuViews: data.menuViews,
               menuRate: formatPercent(data.menuRate),
               recommendedNextAction: data.nextAction,
-              output: '300字以内。1段落目に数値サマリー、2段落目に読み解き、3段落目に次の一手。見出し不要。'
+              output: '300\u5b57\u4ee5\u5185\u30021\u6bb5\u843d\u76ee\u306b\u6570\u5024\u30b5\u30de\u30ea\u30fc\u30012\u6bb5\u843d\u76ee\u306b\u8aad\u307f\u89e3\u304d\u30013\u6bb5\u843d\u76ee\u306b\u6b21\u306e\u4e00\u624b\u3002\u898b\u51fa\u3057\u4e0d\u8981\u3002'
             })
           }
         ]
@@ -286,8 +273,7 @@ const handleAnalyticsSummaries = async (request: Request, env: Env) => {
   }
 
   if (request.method !== 'POST') return textResponse('Method Not Allowed', 405);
-
-  let body: {
+  const body = (await request.json().catch(() => null)) as null | {
     periodLabel?: unknown;
     visits?: unknown;
     bookingClicks?: unknown;
@@ -296,11 +282,7 @@ const handleAnalyticsSummaries = async (request: Request, env: Env) => {
     nextAction?: unknown;
     note?: unknown;
   };
-  try {
-    body = (await request.json()) as typeof body;
-  } catch {
-    return jsonResponse({ error: 'Invalid JSON' }, 400);
-  }
+  if (!body) return jsonResponse({ error: 'Invalid JSON' }, 400);
 
   const visits = toSafeNumber(body.visits);
   const bookingClicks = toSafeNumber(body.bookingClicks);
@@ -337,14 +319,12 @@ const handleAnalyticsSummaries = async (request: Request, env: Env) => {
 
 const handleFreeFortuneResults = async (env: Env) => {
   if (!env.DB) return jsonResponse({ error: 'D1 database binding DB is not configured' }, 500);
-
   const rows = await env.DB.prepare(
     `SELECT id, created_at, theme, situation, question, result_title, result_card, result_reading, result_advice, result_next_step
       FROM free_fortune_readings
       ORDER BY created_at DESC
       LIMIT 100`
   ).all();
-
   return jsonResponse({ results: rows.results ?? [] });
 };
 
@@ -353,11 +333,11 @@ const handleFreeFortune = async (request: Request, env: Env) => {
   const body = (await request.json().catch(() => ({}))) as { theme?: unknown; situation?: unknown; question?: unknown };
   const id = createId();
   const result = {
-    title: '今の恋へのメッセージ',
-    card: '月',
-    reading: '今は焦らず、相手の状況と自分の気持ちを分けて見つめる時期です。',
-    advice: '短い連絡や軽い確認から、無理なく距離を縮めてみましょう。',
-    nextStep: '今日できる小さな一歩を一つ選びましょう。'
+    title: '\u4eca\u306e\u604b\u3078\u306e\u30e1\u30c3\u30bb\u30fc\u30b8',
+    card: '\u6708',
+    reading: '\u4eca\u306f\u7126\u3089\u305a\u3001\u76f8\u624b\u306e\u72b6\u6cc1\u3068\u81ea\u5206\u306e\u6c17\u6301\u3061\u3092\u5206\u3051\u3066\u898b\u3064\u3081\u308b\u6642\u671f\u3067\u3059\u3002',
+    advice: '\u77ed\u3044\u9023\u7d61\u3084\u8efd\u3044\u78ba\u8a8d\u304b\u3089\u3001\u7121\u7406\u306a\u304f\u8ddd\u96e2\u3092\u7e2e\u3081\u3066\u307f\u307e\u3057\u3087\u3046\u3002',
+    nextStep: '\u4eca\u65e5\u3067\u304d\u308b\u5c0f\u3055\u306a\u4e00\u6b69\u3092\u4e00\u3064\u9078\u3073\u307e\u3057\u3087\u3046\u3002'
   };
 
   await env.DB.prepare(
@@ -367,7 +347,7 @@ const handleFreeFortune = async (request: Request, env: Env) => {
   )
     .bind(
       id,
-      sanitizeText(body.theme, 40) || '相手の気持ち',
+      sanitizeText(body.theme, 40) || '\u76f8\u624b\u306e\u6c17\u6301\u3061',
       sanitizeText(body.situation, 500),
       sanitizeText(body.question, 160),
       result.title,
@@ -387,37 +367,16 @@ export default {
 
     if (request.method === 'OPTIONS') return textResponse('OK');
 
-    if (url.pathname === '/api/line/webhook') {
-      return handleLineWebhook(request, env);
-    }
+    if (url.pathname === '/api/line/webhook') return handleLineWebhook(request, env);
 
-    if (isAdminPath(url.pathname) && !isAuthorized(request)) {
-      return unauthorizedResponse();
-    }
+    if (isAdminPath(url.pathname) && !isAuthorized(request)) return unauthorizedResponse();
 
-    if (url.pathname === '/api/admin/analytics-summary-draft') {
-      return handleAnalyticsSummaryDraft(request, env);
-    }
-
-    if (url.pathname === '/api/admin/analytics-summaries') {
-      return handleAnalyticsSummaries(request, env);
-    }
-
-    if (request.method === 'POST' && url.pathname === '/api/free-fortune') {
-      return handleFreeFortune(request, env);
-    }
-
-    if (url.pathname === '/api/free-fortune') {
-      return textResponse('Method Not Allowed', 405);
-    }
-
-    if (request.method === 'GET' && url.pathname === '/api/admin/free-fortune-results') {
-      return handleFreeFortuneResults(env);
-    }
-
-    if (url.pathname.startsWith('/api/')) {
-      return textResponse('Not Found', 404);
-    }
+    if (url.pathname === '/api/admin/analytics-summary-draft') return handleAnalyticsSummaryDraft(request, env);
+    if (url.pathname === '/api/admin/analytics-summaries') return handleAnalyticsSummaries(request, env);
+    if (request.method === 'POST' && url.pathname === '/api/free-fortune') return handleFreeFortune(request, env);
+    if (url.pathname === '/api/free-fortune') return textResponse('Method Not Allowed', 405);
+    if (request.method === 'GET' && url.pathname === '/api/admin/free-fortune-results') return handleFreeFortuneResults(env);
+    if (url.pathname.startsWith('/api/')) return textResponse('Not Found', 404);
 
     return env.ASSETS.fetch(request);
   }
