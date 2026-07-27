@@ -17,6 +17,13 @@ type D1PreparedStatement = {
   all: <T = Record<string, unknown>>() => Promise<{ results?: T[] }>;
 };
 
+type LineWebhookBody = {
+  events?: Array<{
+    type?: string;
+    replyToken?: string;
+  }>;
+};
+
 const headers = {
   'access-control-allow-origin': 'https://ruby-hitomi.fortunestudios.jp',
   'access-control-allow-methods': 'GET, POST, OPTIONS',
@@ -38,7 +45,6 @@ const toSafeNumber = (value: unknown) => {
   const number = Number(value ?? 0);
   return Number.isFinite(number) && number > 0 ? Math.round(number) : 0;
 };
-
 
 const adminUser = 'ruby';
 const adminPassword = 'ruby2026';
@@ -73,6 +79,84 @@ const isAuthorized = (request: Request) => {
   const user = decoded.slice(0, separatorIndex);
   const password = decoded.slice(separatorIndex + 1);
   return user === adminUser && password === adminPassword;
+};
+
+const timingSafeEqual = (left: Uint8Array, right: Uint8Array) => {
+  if (left.length !== right.length) return false;
+
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left[index] ^ right[index];
+  }
+  return diff === 0;
+};
+
+const base64ToBytes = (value: string) => {
+  try {
+    const binary = atob(value);
+    return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  } catch {
+    return new Uint8Array();
+  }
+};
+
+const verifyLineSignature = async (bodyText: string, signature: string | null, channelSecret?: string) => {
+  if (!channelSecret || !signature) return false;
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(channelSecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const digest = await crypto.subtle.sign('HMAC', key, encoder.encode(bodyText));
+  return timingSafeEqual(new Uint8Array(digest), base64ToBytes(signature));
+};
+
+const replyToLine = async (replyToken: string, env: Env) => {
+  if (!env.LINE_CHANNEL_ACCESS_TOKEN) return false;
+
+  const response = await fetch('https://api.line.me/v2/bot/message/reply', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${env.LINE_CHANNEL_ACCESS_TOKEN}`
+    },
+    body: JSON.stringify({
+      replyToken,
+      messages: [{ type: 'text', text: 'メッセージを受信しました' }]
+    })
+  });
+
+  return response.ok;
+};
+
+const handleLineWebhook = async (request: Request, env: Env) => {
+  if (request.method !== 'POST') return textResponse('Method Not Allowed', 405);
+
+  const bodyText = await request.text();
+  const isValid = await verifyLineSignature(bodyText, request.headers.get('x-line-signature'), env.LINE_CHANNEL_SECRET);
+  if (!isValid) return textResponse('Invalid signature', 401);
+
+  let body: LineWebhookBody;
+  try {
+    body = JSON.parse(bodyText) as LineWebhookBody;
+  } catch {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+
+  const events = Array.isArray(body.events) ? body.events : [];
+  if (events.length === 0) return textResponse('OK');
+
+  await Promise.all(
+    events
+      .filter((event) => typeof event.replyToken === 'string' && event.replyToken.length > 0)
+      .map((event) => replyToLine(event.replyToken as string, env))
+  );
+
+  return textResponse('OK');
 };
 
 const formatPercent = (value: number) => `${(value * 100).toFixed(value >= 0.1 ? 0 : 1)}%`;
@@ -133,7 +217,13 @@ const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
     nextAction: sanitizeText(body.nextAction, 240) || '予約につながる導線を見直します。'
   };
 
-  if (!visits) return jsonResponse({ draft: '' });
+  if (!visits) {
+    return jsonResponse({
+      draft:
+        'まだ十分なアクセスデータがないため、AIサマリーは下書き段階です。まずは訪問数、予約クリック、LINEクリック、鑑定メニュー閲覧の数値を集め、予約につながる導線を確認してください。',
+      source: 'fallback'
+    });
+  }
 
   const fallback = buildAnalyticsDraftFallback(data);
   if (!env.OPENAI_API_KEY) return jsonResponse({ draft: fallback, source: 'fallback' });
@@ -180,6 +270,7 @@ const handleAnalyticsSummaryDraft = async (request: Request, env: Env) => {
     return jsonResponse({ draft: fallback, source: 'fallback' });
   }
 };
+
 const handleAnalyticsSummaries = async (request: Request, env: Env) => {
   if (!env.DB) return jsonResponse({ error: 'D1 database binding DB is not configured' }, 500);
 
@@ -262,11 +353,11 @@ const handleFreeFortune = async (request: Request, env: Env) => {
   const body = (await request.json().catch(() => ({}))) as { theme?: unknown; situation?: unknown; question?: unknown };
   const id = createId();
   const result = {
-    title: '\u4eca\u306e\u604b\u3078\u306e\u30e1\u30c3\u30bb\u30fc\u30b8',
-    card: '\u6708',
-    reading: '\u4eca\u306f\u7126\u3089\u305a\u3001\u76f8\u624b\u306e\u72b6\u6cc1\u3068\u81ea\u5206\u306e\u6c17\u6301\u3061\u3092\u5206\u3051\u3066\u898b\u3064\u3081\u308b\u6642\u671f\u3067\u3059\u3002',
-    advice: '\u77ed\u3044\u9023\u7d61\u3084\u8efd\u3044\u78ba\u8a8d\u304b\u3089\u3001\u7121\u7406\u306a\u304f\u8ddd\u96e2\u3092\u7e2e\u3081\u3066\u307f\u307e\u3057\u3087\u3046\u3002',
-    nextStep: '\u4eca\u65e5\u3067\u304d\u308b\u5c0f\u3055\u306a\u4e00\u6b69\u3092\u4e00\u3064\u9078\u3073\u307e\u3057\u3087\u3046\u3002'
+    title: '今の恋へのメッセージ',
+    card: '月',
+    reading: '今は焦らず、相手の状況と自分の気持ちを分けて見つめる時期です。',
+    advice: '短い連絡や軽い確認から、無理なく距離を縮めてみましょう。',
+    nextStep: '今日できる小さな一歩を一つ選びましょう。'
   };
 
   await env.DB.prepare(
@@ -276,7 +367,7 @@ const handleFreeFortune = async (request: Request, env: Env) => {
   )
     .bind(
       id,
-      sanitizeText(body.theme, 40) || '\u76f8\u624b\u306e\u6c17\u6301\u3061',
+      sanitizeText(body.theme, 40) || '相手の気持ち',
       sanitizeText(body.situation, 500),
       sanitizeText(body.question, 160),
       result.title,
@@ -296,10 +387,15 @@ export default {
 
     if (request.method === 'OPTIONS') return textResponse('OK');
 
+    if (url.pathname === '/api/line/webhook') {
+      return handleLineWebhook(request, env);
+    }
+
     if (isAdminPath(url.pathname) && !isAuthorized(request)) {
       return unauthorizedResponse();
     }
-if (url.pathname === '/api/admin/analytics-summary-draft') {
+
+    if (url.pathname === '/api/admin/analytics-summary-draft') {
       return handleAnalyticsSummaryDraft(request, env);
     }
 
