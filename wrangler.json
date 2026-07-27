@@ -18,7 +18,7 @@
                          {
                              "binding":  "DB",
                              "database_name":  "ruby-hitomi",
-                             "database_id":  "0ba611b6-06ef-4e33-ad54-183f323399d3"
+                             "database_id":  "0dc72ee4-f34f-4d6c-9d14-861cbc150a44"
                          }
                      ],
     "workers_dev":  true,
