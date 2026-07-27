@@ -1,0 +1,480 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { site, services } from '@/data/site';
+
+const snsPublishEndpoint = import.meta.env.PUBLIC_INSTAGRAM_PUBLISH_ENDPOINT || '';
+const tenant = {
+  name: site.name,
+  lineUrl: site.lineUrl,
+  bookingUrl: site.bookingUrl,
+  services
+};
+---
+<BaseLayout title="SNSコンテンツ作成" description="Instagram向けコンテンツを作成し、本人確認後に投稿準備する管理画面。">
+  <Breadcrumbs items={[{ href: '/admin/', label: '管理画面' }, { label: 'SNSコンテンツ作成' }]} />
+  <section class="section pt-6">
+    <div class="container">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">SNS Creator</p>
+          <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">SNSコンテンツ作成</h1>
+          <p class="mt-3 max-w-3xl text-[color:var(--muted)]">
+            Instagram向けのテーマ、縦型スライド、キャプションを作成します。ルビー瞳サイトでは、本人確認なしの自動投稿は行いません。
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="admin-button admin-button-secondary" id="suggestThemeButton" type="button">別のテーマを提案</button>
+          <button class="admin-button" id="generateSlidesButton" type="button">スライド案を作成</button>
+        </div>
+      </div>
+
+      <div class="mt-8 grid gap-6 xl:grid-cols-[380px_1fr]">
+        <aside class="glass grid gap-5 rounded-[8px] p-5">
+          <div>
+            <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">投稿設定</h2>
+            <p class="mt-2 text-sm text-[color:var(--muted)]">AI推奨テーマは初期値です。必ず内容を確認・編集してから作成します。</p>
+          </div>
+
+          <label class="grid gap-2 text-sm font-bold">
+            投稿テーマ
+            <textarea class="admin-input min-h-20" id="topic"></textarea>
+          </label>
+
+          <label class="grid gap-2 text-sm font-bold">
+            AI推奨理由
+            <textarea class="admin-input min-h-20" id="reason"></textarea>
+          </label>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="grid gap-2 text-sm font-bold">
+              投稿目的
+              <select class="admin-input" id="goal">
+                <option>保存・共感</option>
+                <option>LINE登録</option>
+                <option>予約導線</option>
+                <option>ブログ誘導</option>
+              </select>
+            </label>
+            <label class="grid gap-2 text-sm font-bold">
+              投稿形式
+              <select class="admin-input" id="format">
+                <option value="carousel">カルーセル</option>
+                <option value="reel">リール用スライド</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="grid gap-2 text-sm font-bold">
+            想定読者
+            <input class="admin-input" id="audience" type="text" />
+          </label>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="grid gap-2 text-sm font-bold">
+              スライド枚数
+              <input class="admin-input" id="slideCount" max="10" min="5" type="number" value="7" />
+            </label>
+            <label class="grid gap-2 text-sm font-bold">
+              雰囲気
+              <select class="admin-input" id="tone">
+                <option>優しく寄り添う</option>
+                <option>落ち着いた大人ピンク</option>
+                <option>シンプルで読みやすい</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="grid gap-2 text-sm font-bold">
+            紹介するサービス
+            <select class="admin-input" id="serviceName">
+              {services.map((service) => <option>{service.title}</option>)}
+            </select>
+          </label>
+
+          <label class="grid gap-2 text-sm font-bold">
+            最終ページの誘導先
+            <select class="admin-input" id="ctaTarget">
+              <option value="line">LINE</option>
+              <option value="booking">予約ページ</option>
+            </select>
+          </label>
+
+          <div class="rounded-[8px] border border-[var(--line)] bg-white/50 p-4 text-sm leading-7 text-[color:var(--muted)] dark:bg-white/5">
+            <p class="font-bold text-ruby dark:text-blush">安全ルール</p>
+            <p>断定表現、不安を煽る表現、医療・法律・投資などの専門判断は避けます。投稿ボタンを押すまでInstagramへ送信しません。</p>
+          </div>
+        </aside>
+
+        <div class="grid gap-6">
+          <section class="glass rounded-[8px] p-5">
+            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">スライド編集</h2>
+                <p class="mt-1 text-sm text-[color:var(--muted)]">各スライドの見出し・本文を編集できます。上下ボタンで並べ替えます。</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button class="admin-button admin-button-secondary" id="addSlideButton" type="button">ページ追加</button>
+                <button class="admin-button admin-button-secondary" id="downloadAllButton" type="button">PNG一括出力</button>
+              </div>
+            </div>
+            <div class="mt-5 grid gap-4" id="slideEditor"></div>
+          </section>
+
+          <section class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <div class="glass rounded-[8px] p-5">
+              <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">プレビュー</h2>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2" id="slidePreview"></div>
+            </div>
+
+            <div class="glass rounded-[8px] p-5">
+              <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">キャプション</h2>
+              <textarea class="admin-input mt-4 min-h-[220px]" id="caption"></textarea>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button class="admin-button admin-button-secondary" id="copyCaptionButton" type="button">コピー</button>
+                <button class="admin-button" id="instagramPostButton" type="button">Instagramに投稿</button>
+              </div>
+              <p class="mt-3 text-sm text-[color:var(--muted)]" id="publishStatus">投稿前です。</p>
+            </div>
+          </section>
+
+          <section class="glass rounded-[8px] p-5">
+            <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">投稿履歴</h2>
+            <div class="mt-4 grid gap-3" id="historyList"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="confirmDialog" class="confirm-dialog">
+    <form method="dialog">
+      <h2 class="font-serif text-2xl font-bold text-ruby">最終確認</h2>
+      <p class="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+        本人確認後に投稿準備へ進みます。画像、キャプション、ハッシュタグ、誘導先に問題がないことを確認してください。
+      </p>
+      <div class="mt-5 flex flex-wrap justify-end gap-2">
+        <button class="admin-button admin-button-secondary" value="cancel">戻る</button>
+        <button class="admin-button" value="confirm">確認して投稿準備</button>
+      </div>
+    </form>
+  </dialog>
+
+  <style>
+    .admin-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .dark .admin-input {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--ruby);
+      padding: 0.7rem 1.1rem;
+      color: white;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .admin-button-secondary {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--ruby);
+    }
+
+    .slide-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1rem;
+    }
+
+    .dark .slide-card {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .slide-preview {
+      aspect-ratio: 9 / 16;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(160deg, #fff7f3, #f6dce5 54%, #fffaf7);
+      overflow: hidden;
+      padding: 1.1rem;
+      display: grid;
+      align-content: space-between;
+      min-height: 360px;
+    }
+
+    .confirm-dialog {
+      width: min(520px, calc(100% - 32px));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+    }
+
+    .confirm-dialog::backdrop {
+      background: rgba(18, 9, 16, 0.5);
+    }
+  </style>
+
+  <script is:inline define:vars={{ tenant, snsPublishEndpoint }}>
+    const themeIdeas = [
+      {
+        topic: '連絡を待つ時間に心を整える3つのヒント',
+        reason: '恋愛相談で多い「待つ不安」に寄り添い、保存されやすい実用テーマです。',
+        goal: '保存・共感',
+        audience: '恋愛で相手からの連絡を待っている人'
+      },
+      {
+        topic: '復縁したい時に焦らないための小さな整理',
+        reason: '復縁への不安を煽らず、今できる行動整理へつなげられます。',
+        goal: 'LINE登録',
+        audience: '復縁の可能性を知りたい人'
+      },
+      {
+        topic: '相手の気持ちが見えない時に確認したいこと',
+        reason: 'ルビー瞳の得意分野と自然に合い、鑑定メニューへの導線を作れます。',
+        goal: '予約導線',
+        audience: '相手の本音が分からず悩んでいる人'
+      }
+    ];
+    const historyKey = 'ruby-hitomi-sns-post-history';
+    const fields = {
+      topic: document.querySelector('#topic'),
+      reason: document.querySelector('#reason'),
+      goal: document.querySelector('#goal'),
+      format: document.querySelector('#format'),
+      audience: document.querySelector('#audience'),
+      slideCount: document.querySelector('#slideCount'),
+      tone: document.querySelector('#tone'),
+      serviceName: document.querySelector('#serviceName'),
+      ctaTarget: document.querySelector('#ctaTarget'),
+      caption: document.querySelector('#caption')
+    };
+    const slideEditor = document.querySelector('#slideEditor');
+    const slidePreview = document.querySelector('#slidePreview');
+    const historyList = document.querySelector('#historyList');
+    const publishStatus = document.querySelector('#publishStatus');
+    const confirmDialog = document.querySelector('#confirmDialog');
+    let slides = [];
+    let suggestionIndex = 0;
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value) || min));
+    const safeText = (text, max) => String(text || '').replace(/\s+/g, ' ').trim().slice(0, max);
+    const getHistory = () => JSON.parse(localStorage.getItem(historyKey) || '[]');
+    const setHistory = (items) => localStorage.setItem(historyKey, JSON.stringify(items));
+
+    const applySuggestion = () => {
+      const idea = themeIdeas[suggestionIndex % themeIdeas.length];
+      fields.topic.value = idea.topic;
+      fields.reason.value = idea.reason;
+      fields.goal.value = idea.goal;
+      fields.audience.value = idea.audience;
+      suggestionIndex += 1;
+    };
+
+    const makeSlides = () => {
+      const count = clamp(fields.slideCount.value, 5, 10);
+      const topic = safeText(fields.topic.value, 40);
+      const cta = fields.ctaTarget.value === 'line' ? 'LINEで相談する' : '予約ページを見る';
+      const base = [
+        { heading: topic, body: '今の気持ちを責めずに、まずは静かに整理していきましょう。' },
+        { heading: '不安が強い時ほど', body: '相手の反応だけを見続けると、心が疲れやすくなります。' },
+        { heading: '事実と想像を分ける', body: '連絡の頻度、言葉、態度を分けて見ると、次の一歩が選びやすくなります。' },
+        { heading: '急いで答えを出さない', body: '恋の流れは一瞬で決めなくても大丈夫。落ち着いて整える時間も大切です。' },
+        { heading: '鑑定で見えること', body: 'タロットとルノルマンで、相手の気持ちや今後の流れを丁寧に読み解きます。' },
+        { heading: '未来は選べます', body: '占いは未来を決めつけるものではなく、よりよい選択のヒントです。' },
+        { heading: cta, body: `${tenant.name}が、今の状況を一緒に整理します。` }
+      ];
+      while (base.length < count) {
+        base.splice(base.length - 1, 0, { heading: '心を守る選択', body: '自分が安心できる距離感や言葉を、少しずつ選んでいきましょう。' });
+      }
+      slides = base.slice(0, count).map((slide, index) => ({ ...slide, id: crypto.randomUUID?.() || `${Date.now()}-${index}` }));
+      updateCaption();
+      renderSlides();
+    };
+
+    const updateCaption = () => {
+      const tags = ['#恋愛占い', '#復縁占い', '#タロット占い', '#ルノルマンカード', '#ルビー瞳'];
+      fields.caption.value = `${fields.topic.value}\n\n恋愛で迷う時、相手の気持ちだけでなく、自分の心を守る視点も大切です。\n\n気になる方はLINEまたは予約ページからご相談ください。\n\n${tags.join(' ')}`;
+    };
+
+    const renderSlides = () => {
+      slideEditor.innerHTML = '';
+      slidePreview.innerHTML = '';
+      slides.forEach((slide, index) => {
+        const card = document.createElement('article');
+        card.className = 'slide-card grid gap-3';
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <strong>${index + 1}枚目</strong>
+            <div class="flex flex-wrap gap-2">
+              <button class="admin-button admin-button-secondary" data-action="up" type="button">上へ</button>
+              <button class="admin-button admin-button-secondary" data-action="down" type="button">下へ</button>
+              <button class="admin-button admin-button-secondary" data-action="rewrite" type="button">短く整える</button>
+              <button class="admin-button admin-button-secondary" data-action="delete" type="button">削除</button>
+              <button class="admin-button" data-action="download" type="button">PNG</button>
+            </div>
+          </div>
+          <label class="grid gap-2 text-sm font-bold">見出し<input class="admin-input" data-field="heading" value="${slide.heading.replaceAll('"', '&quot;')}" /></label>
+          <label class="grid gap-2 text-sm font-bold">本文<textarea class="admin-input min-h-20" data-field="body">${slide.body}</textarea></label>
+        `;
+        card.addEventListener('input', (event) => {
+          const field = event.target.dataset.field;
+          if (!field) return;
+          slide[field] = event.target.value;
+          renderPreview();
+        });
+        card.addEventListener('click', (event) => {
+          const action = event.target.dataset.action;
+          if (!action) return;
+          if (action === 'up' && index > 0) [slides[index - 1], slides[index]] = [slides[index], slides[index - 1]];
+          if (action === 'down' && index < slides.length - 1) [slides[index + 1], slides[index]] = [slides[index], slides[index + 1]];
+          if (action === 'delete' && slides.length > 5) slides.splice(index, 1);
+          if (action === 'rewrite') {
+            slide.heading = safeText(slide.heading, 24);
+            slide.body = safeText(slide.body, 90);
+          }
+          if (action === 'download') downloadSlide(index);
+          renderSlides();
+        });
+        slideEditor.append(card);
+      });
+      renderPreview();
+    };
+
+    const renderPreview = () => {
+      slidePreview.innerHTML = '';
+      slides.forEach((slide, index) => {
+        const item = document.createElement('article');
+        item.className = 'slide-preview';
+        item.innerHTML = `
+          <div>
+            <p class="text-xs font-bold tracking-[0.18em] text-gold">${tenant.name}</p>
+            <h3 class="mt-4 font-serif text-2xl font-bold leading-snug text-ruby">${slide.heading}</h3>
+            <p class="mt-4 text-sm leading-7">${slide.body}</p>
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">${index + 1}/${slides.length}</p>
+        `;
+        slidePreview.append(item);
+      });
+    };
+
+    const drawSlide = (slide, index) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 1080, 1920);
+      gradient.addColorStop(0, '#fff8f5');
+      gradient.addColorStop(0.55, '#f3d5df');
+      gradient.addColorStop(1, '#fffaf7');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1920);
+      ctx.fillStyle = '#9b1d3d';
+      ctx.font = '700 44px sans-serif';
+      ctx.fillText(tenant.name, 96, 150);
+      ctx.font = '700 74px serif';
+      wrapText(ctx, slide.heading, 96, 420, 888, 92);
+      ctx.fillStyle = '#21161c';
+      ctx.font = '500 46px sans-serif';
+      wrapText(ctx, slide.body, 96, 760, 888, 68);
+      ctx.fillStyle = '#6d5862';
+      ctx.font = '400 34px sans-serif';
+      ctx.fillText(`${index + 1}/${slides.length}`, 96, 1760);
+      ctx.fillText(fields.ctaTarget.value === 'line' ? tenant.lineUrl : tenant.bookingUrl, 96, 1820);
+      return canvas;
+    };
+
+    const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
+      const chars = String(text).split('');
+      let line = '';
+      for (const char of chars) {
+        const test = line + char;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, y);
+          line = char;
+          y += lineHeight;
+        } else {
+          line = test;
+        }
+      }
+      if (line) ctx.fillText(line, x, y);
+    };
+
+    const downloadSlide = (index) => {
+      const canvas = drawSlide(slides[index], index);
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `ruby-hitomi-instagram-${String(index + 1).padStart(2, '0')}.png`;
+      link.click();
+    };
+
+    const renderHistory = () => {
+      const items = getHistory();
+      historyList.innerHTML = items.length ? '' : '<p class="text-sm text-[color:var(--muted)]">投稿履歴はまだありません。</p>';
+      items.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'rounded-[8px] border border-[var(--line)] bg-white/45 p-4 text-sm dark:bg-white/5';
+        row.innerHTML = `<strong>${item.topic}</strong><p class="mt-1 text-[color:var(--muted)]">${item.status} / ${item.createdAt}</p>`;
+        historyList.append(row);
+      });
+    };
+
+    document.querySelector('#suggestThemeButton').addEventListener('click', applySuggestion);
+    document.querySelector('#generateSlidesButton').addEventListener('click', makeSlides);
+    document.querySelector('#addSlideButton').addEventListener('click', () => {
+      if (slides.length >= 10) return;
+      slides.splice(slides.length - 1, 0, { id: crypto.randomUUID?.() || String(Date.now()), heading: '新しいページ', body: '本文を入力してください。' });
+      renderSlides();
+    });
+    document.querySelector('#downloadAllButton').addEventListener('click', () => {
+      slides.forEach((_, index) => setTimeout(() => downloadSlide(index), index * 250));
+      publishStatus.textContent = 'PNGを順番に出力しました。';
+    });
+    document.querySelector('#copyCaptionButton').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(fields.caption.value);
+      publishStatus.textContent = 'キャプションをコピーしました。';
+    });
+    document.querySelector('#instagramPostButton').addEventListener('click', async () => {
+      if (!slides.length) makeSlides();
+      const result = await new Promise((resolve) => {
+        confirmDialog.addEventListener('close', () => resolve(confirmDialog.returnValue), { once: true });
+        confirmDialog.showModal();
+      });
+      if (result !== 'confirm') return;
+      const history = getHistory();
+      history.unshift({
+        topic: fields.topic.value,
+        status: snsPublishEndpoint ? '投稿API送信待ち' : '本人投稿待ち',
+        createdAt: new Date().toLocaleString('ja-JP')
+      });
+      setHistory(history.slice(0, 20));
+      renderHistory();
+      if (snsPublishEndpoint) {
+        publishStatus.textContent = '投稿APIは設定済みです。本人確認後の送信処理に接続できます。';
+      } else {
+        publishStatus.textContent = 'PNGとキャプションを確認し、Instagramアプリまたは公式画面から本人が投稿してください。';
+        window.open('https://www.instagram.com/', '_blank', 'noreferrer');
+      }
+    });
+
+    applySuggestion();
+    makeSlides();
+    renderHistory();
+  </script>
+</BaseLayout>

@@ -6,11 +6,13 @@ import { site } from '@/data/site';
     <div>
       <p class="text-sm font-bold tracking-[0.18em] text-gold">RESERVATION</p>
       <h2 class="mt-2 font-serif text-3xl font-bold leading-tight text-ruby dark:text-blush">迷いをひとりで抱え込まなくて大丈夫です</h2>
-      <p class="mt-4 text-[color:var(--muted)]">STORES予約、LINE、Zoom、電話、メール鑑定に対応。初めての方にも流れがわかるよう、丁寧にご案内します。</p>
+      <p class="mt-4 text-[color:var(--muted)]">
+        予約はSTORES予約から。メニュー選びで迷う方、鑑定前に確認したいことがある方はLINEからご相談ください。
+      </p>
     </div>
     <div class="flex flex-col justify-center gap-3 sm:flex-row md:flex-col">
       <a class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass transition hover:bg-wine" href={site.bookingUrl} data-ga-event="stores_booking_click">STORES予約へ</a>
-      <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.lineUrl} data-ga-event="line_click">LINEで相談する</a>
+      <a class="rounded-full border border-[var(--line)] bg-white/50 px-6 py-3 text-center font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.lineUrl} data-ga-event="line_click">LINEで質問する</a>
     </div>
   </div>
 </section>

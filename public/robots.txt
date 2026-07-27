@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
 
-Sitemap: https://ruby-hitomi.com/sitemap-index.xml
+Sitemap: https://ruby-hitomi.fortunestudios.jp/sitemap-index.xml

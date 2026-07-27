@@ -34,12 +34,16 @@ const defaultSchema = {
   description: site.description,
   areaServed: '日本',
   serviceType: ['恋愛占い', '復縁占い', 'タロット占い', 'ルノルマンカード鑑定', '電話占い'],
-  sameAs: Object.values(site.socials)
+  sameAs: Object.values(site.socials).filter(Boolean)
 };
 
-const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
-const cloudflareWebAnalyticsToken = import.meta.env.PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN;
-const clarityProjectId = import.meta.env.PUBLIC_CLARITY_PROJECT_ID;
+const isAdminPath = Astro.url.pathname.startsWith('/admin/');
+const shouldLoadAnalytics = !isAdminPath;
+const gaMeasurementId = shouldLoadAnalytics ? import.meta.env.PUBLIC_GA_MEASUREMENT_ID : undefined;
+const cloudflareWebAnalyticsToken = shouldLoadAnalytics
+  ? import.meta.env.PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN
+  : undefined;
+const clarityProjectId = shouldLoadAnalytics ? import.meta.env.PUBLIC_CLARITY_PROJECT_ID : undefined;
 const cloudflareBeaconConfig = cloudflareWebAnalyticsToken
   ? JSON.stringify({ token: cloudflareWebAnalyticsToken })
   : undefined;

@@ -1,8 +1,26 @@
-{
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "ruby-hitomi",
-  "compatibility_date": "2026-07-08",
-  "assets": {
-    "directory": "./dist"
-  }
+﻿{
+    "$schema":  "./node_modules/wrangler/config-schema.json",
+    "name":  "ruby-hitomi",
+    "compatibility_date":  "2026-07-08",
+    "main":  "./src/worker.ts",
+    "assets":  {
+                   "directory":  "./dist",
+                   "binding":  "ASSETS",
+                   "run_worker_first":  true
+               },
+    "vars":  {
+                 "PUBLIC_GA_MEASUREMENT_ID":  "G-4XTSPYTHR7",
+                 "PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN":  "07c112861b3a4aef950456970646fe7f",
+                 "PUBLIC_CLARITY_PROJECT_ID":  "xoc9i8598b",
+                 "OPENAI_MODEL":  "gpt-4o-mini"
+             },
+    "d1_databases":  [
+                         {
+                             "binding":  "DB",
+                             "database_name":  "ruby-hitomi",
+                             "database_id":  "0ba611b6-06ef-4e33-ad54-183f323399d3"
+                         }
+                     ],
+    "workers_dev":  true,
+    "preview_urls":  true
 }

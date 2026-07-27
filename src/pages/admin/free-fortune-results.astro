@@ -1,0 +1,97 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+---
+<BaseLayout title="無料占い結果" description="AIひとみ先生の無料占い結果を確認する管理画面。">
+  <Breadcrumbs items={[{ href: '/admin/', label: '管理画面' }, { label: '無料占い結果' }]} />
+  <section class="section pt-6">
+    <div class="container">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">Free Reading Logs</p>
+          <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">無料占い結果</h1>
+          <p class="mt-3 max-w-3xl text-[color:var(--muted)]">
+            直近100件の無料占いリクエストを確認できます。この画面はCloudflare Accessで保護してください。
+          </p>
+        </div>
+        <button class="admin-button" id="reloadButton" type="button">再読み込み</button>
+      </div>
+
+      <div class="mt-8 grid gap-4" id="resultsList">
+        <div class="glass rounded-[8px] p-5 text-[color:var(--muted)]">読み込み中です。</div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .admin-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 999px;
+      background: var(--ruby);
+      padding: 0.7rem 1.1rem;
+      color: white;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+  </style>
+
+  <script is:inline>
+    const resultsList = document.querySelector('#resultsList');
+    const reloadButton = document.querySelector('#reloadButton');
+    const escapeHtml = (value) =>
+      String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+
+    const renderResults = (rows) => {
+      if (!rows.length) {
+        resultsList.innerHTML = '<div class="glass rounded-[8px] p-5 text-[color:var(--muted)]">まだ無料占い結果はありません。</div>';
+        return;
+      }
+
+      resultsList.innerHTML = rows.map((row) => `
+        <article class="glass rounded-[8px] p-5">
+          <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p class="text-sm text-[color:var(--muted)]">${escapeHtml(row.created_at)}</p>
+              <h2 class="mt-1 font-serif text-2xl font-bold text-ruby dark:text-blush">${escapeHtml(row.theme)}</h2>
+            </div>
+            <code class="text-xs text-[color:var(--muted)]">${escapeHtml(row.id)}</code>
+          </div>
+          <div class="mt-4 grid gap-3 text-sm text-[color:var(--muted)]">
+            <p><strong class="text-[color:var(--text)]">状況:</strong> ${escapeHtml(row.situation || '未入力')}</p>
+            <p><strong class="text-[color:var(--text)]">質問:</strong> ${escapeHtml(row.question || '未入力')}</p>
+            <p><strong class="text-[color:var(--text)]">結果:</strong> ${escapeHtml(row.result_title)} / ${escapeHtml(row.result_card)}</p>
+            <p>${escapeHtml(row.result_reading)}</p>
+            <p>${escapeHtml(row.result_advice)}</p>
+            <p>${escapeHtml(row.result_next_step)}</p>
+          </div>
+        </article>
+      `).join('');
+    };
+
+    const loadResults = async () => {
+      resultsList.innerHTML = '<div class="glass rounded-[8px] p-5 text-[color:var(--muted)]">読み込み中です。</div>';
+      try {
+        const response = await fetch('/api/admin/free-fortune-results');
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'failed');
+        }
+        renderResults(data.results || []);
+      } catch {
+        resultsList.innerHTML = '<div class="glass rounded-[8px] p-5 text-[color:var(--muted)]">結果を読み込めませんでした。D1設定とCloudflare Accessを確認してください。</div>';
+      }
+    };
+
+    reloadButton?.addEventListener('click', loadResults);
+    loadResults();
+  </script>
+</BaseLayout>

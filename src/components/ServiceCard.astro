@@ -4,8 +4,9 @@ type Props = {
   description: string;
   price: string;
   duration: string;
+  href?: string;
 };
-const { title, description, price, duration } = Astro.props;
+const { title, description, price, duration, href } = Astro.props;
 ---
 <article class="glass rounded-[8px] p-6">
   <div class="mb-5 grid size-12 place-items-center rounded-full bg-blush text-xl text-ruby dark:bg-ruby/35 dark:text-blush">✦</div>
@@ -15,4 +16,5 @@ const { title, description, price, duration } = Astro.props;
     <p class="text-sm text-[color:var(--muted)]">{duration}</p>
     <p class="font-serif text-2xl font-bold">{price}</p>
   </div>
+  {href && <a class="mt-5 block rounded-full bg-ruby px-5 py-2.5 text-center text-sm font-bold text-white shadow-glass transition hover:bg-wine" href={href}>予約へ進む</a>}
 </article>

@@ -1,0 +1,49 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+
+const adminItems = [
+  {
+    href: '/admin/blog/',
+    title: 'ブログ管理',
+    description: '公開済み記事の内容確認、下書き作成、Markdown出力を行います。'
+  },
+  {
+    href: '/admin/sns/',
+    title: 'SNSコンテンツ作成',
+    description: 'Instagram向け投稿テーマ、スライド、キャプションを作成し、本人確認後の投稿準備を行います。'
+  },
+  {
+    href: '/admin/analytics/',
+    title: 'アクセス解析',
+    description: '解析ツールの設定状態、GA4イベント名、確認先リンクをまとめて確認します。'
+  },
+  {
+    href: '/admin/free-fortune-results/',
+    title: '無料占い結果',
+    description: 'AIひとみ先生の無料占いで送信された相談テーマと鑑定結果を確認します。'
+  }
+];
+---
+<BaseLayout title="管理画面" description="ルビー瞳公式サイトの管理画面。">
+  <Breadcrumbs items={[{ label: '管理画面' }]} />
+  <section class="section pt-6">
+    <div class="container">
+      <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">Admin</p>
+      <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">管理画面</h1>
+      <p class="mt-3 max-w-3xl text-[color:var(--muted)]">
+        サイト運用に必要な編集・確認画面をまとめています。この管理画面はアクセス解析の計測対象から除外しています。
+      </p>
+
+      <div class="mt-8 grid gap-5 md:grid-cols-2">
+        {adminItems.map((item) => (
+          <a class="glass rounded-[8px] p-6 transition hover:-translate-y-0.5 hover:shadow-glass" href={item.href} rel="nofollow">
+            <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">{item.title}</h2>
+            <p class="mt-3 text-sm leading-7 text-[color:var(--muted)]">{item.description}</p>
+            <span class="mt-5 inline-flex rounded-full bg-ruby px-4 py-2 text-sm font-bold text-white">開く</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

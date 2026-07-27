@@ -1,0 +1,147 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { site } from '@/data/site';
+---
+<BaseLayout
+  title="AIひとみ先生の無料占い"
+  description="AIひとみ先生の無料占い。恋愛、復縁、相手の気持ち、片思いなど、今の悩みを1テーマでやさしく整理します。"
+>
+  <Breadcrumbs items={[{ label: 'AIひとみ先生の無料占い' }]} />
+  <section class="section pt-6">
+    <div class="container grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div>
+        <p class="text-sm font-bold tracking-[0.18em] text-gold">FREE READING</p>
+        <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">AIひとみ先生の無料占い</h1>
+        <p class="mt-4 text-[color:var(--muted)]">
+          今の恋の状況を、1テーマでやさしく整理する無料ミニ占いです。深い鑑定が必要な場合は、結果のあとにLINEや予約へ進めます。
+        </p>
+        <div class="mt-6 rounded-[8px] border border-[var(--line)] bg-white/55 p-5 text-sm text-[color:var(--muted)] dark:bg-white/5">
+          <p class="font-bold text-ruby dark:text-blush">ご利用前の注意</p>
+          <p class="mt-2">この無料占いは、気持ちを整理するための簡易リーディングです。未来や相手の気持ちを断定するものではありません。</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-[8px] p-5 md:p-6">
+        <form class="grid gap-4" id="freeFortuneForm">
+          <label class="grid gap-2 text-sm font-bold">
+            相談テーマ
+            <select class="fortune-input" id="theme">
+              <option value="相手の気持ち">相手の気持ち</option>
+              <option value="復縁">復縁</option>
+              <option value="片思い">片思い</option>
+              <option value="不倫・複雑恋愛">不倫・複雑恋愛</option>
+              <option value="結婚">結婚</option>
+              <option value="仕事・人間関係">仕事・人間関係</option>
+            </select>
+          </label>
+
+          <label class="grid gap-2 text-sm font-bold">
+            今の状況
+            <textarea class="fortune-input min-h-28" id="situation" maxlength="280" placeholder="例：最近連絡が少なく、相手の気持ちが分からなくて不安です。"></textarea>
+          </label>
+
+          <label class="grid gap-2 text-sm font-bold">
+            今いちばん知りたいこと
+            <input class="fortune-input" id="question" maxlength="90" placeholder="例：連絡を待つべきか、自分から送るべきか" />
+          </label>
+
+          <button class="rounded-full bg-ruby px-6 py-3 text-center font-bold text-white shadow-glass transition hover:bg-wine disabled:cursor-wait disabled:opacity-70" id="submitButton" type="submit">
+            無料で占う
+          </button>
+        </form>
+
+        <section class="mt-6 hidden rounded-[8px] border border-[var(--line)] bg-white/55 p-5 dark:bg-white/5" id="resultPanel" aria-live="polite">
+          <p class="text-sm font-bold tracking-[0.18em] text-gold">RESULT</p>
+          <h2 class="mt-2 font-serif text-2xl font-bold text-ruby dark:text-blush" id="resultTitle"></h2>
+          <p class="mt-1 text-sm text-[color:var(--muted)]" id="resultMeta"></p>
+          <div class="mt-4 grid gap-4 text-[color:var(--muted)]" id="resultBody"></div>
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+            <a class="rounded-full bg-ruby px-5 py-2.5 text-center text-sm font-bold text-white shadow-glass" href={site.bookingUrl} data-ga-event="stores_booking_click">詳しく鑑定を予約する</a>
+            <a class="rounded-full border border-[var(--line)] bg-white/50 px-5 py-2.5 text-center text-sm font-bold text-ruby dark:bg-white/10 dark:text-blush" href={site.lineUrl} data-ga-event="line_click">LINEで相談する</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .fortune-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .dark .fortune-input {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .fortune-input:focus {
+      border-color: rgba(166, 35, 70, 0.55);
+      box-shadow: 0 0 0 3px rgba(166, 35, 70, 0.12);
+    }
+  </style>
+
+  <script is:inline>
+    const form = document.querySelector('#freeFortuneForm');
+    const resultPanel = document.querySelector('#resultPanel');
+    const resultTitle = document.querySelector('#resultTitle');
+    const resultMeta = document.querySelector('#resultMeta');
+    const resultBody = document.querySelector('#resultBody');
+    const submitButton = document.querySelector('#submitButton');
+    const escapeHtml = (value) =>
+      String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const theme = document.querySelector('#theme')?.value || '相手の気持ち';
+      const situation = document.querySelector('#situation')?.value.trim() || '';
+      const question = document.querySelector('#question')?.value.trim() || '';
+      submitButton.disabled = true;
+      submitButton.textContent = '占っています...';
+      resultPanel.classList.remove('hidden');
+      resultTitle.textContent = 'AIひとみ先生が鑑定中です';
+      resultMeta.textContent = '';
+      resultBody.innerHTML = '<p>少しだけお待ちください。</p>';
+
+      try {
+        const response = await fetch('/api/free-fortune', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ theme, situation, question })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'free fortune request failed');
+        }
+
+        resultTitle.textContent = data.title || `${theme}へのメッセージ`;
+        resultMeta.textContent = data.card ? `象徴：${data.card}` : '';
+        resultBody.innerHTML = `
+          <p>${escapeHtml(data.reading)}</p>
+          <p>${escapeHtml(data.advice)}</p>
+          <p>${escapeHtml(data.nextStep)}</p>
+        `;
+      } catch {
+        resultTitle.textContent = '鑑定できませんでした';
+        resultMeta.textContent = '';
+        resultBody.innerHTML = '<p>設定または通信に問題があります。時間をおいて再度お試しいただくか、LINEからご相談ください。</p>';
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = '無料で占う';
+        resultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  </script>
+</BaseLayout>

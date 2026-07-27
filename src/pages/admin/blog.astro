@@ -1,0 +1,541 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .map((post) => ({
+    slug: post.slug,
+    title: post.data.title,
+    description: post.data.description,
+    pubDate: post.data.pubDate.toISOString().slice(0, 10),
+    updatedDate: post.data.updatedDate?.toISOString().slice(0, 10) ?? '',
+    category: post.data.category,
+    tags: post.data.tags,
+    featured: post.data.featured,
+    body: post.body
+  }));
+
+const blogAutomationEndpoint = import.meta.env.PUBLIC_BLOG_AUTOMATION_ENDPOINT || '';
+---
+<BaseLayout title="ブログ管理" description="ルビー瞳公式サイトのブログ記事を編集する管理画面。">
+  <Breadcrumbs items={[{ href: '/blog/', label: 'ブログ' }, { label: 'ブログ管理' }]} />
+  <section class="section pt-6">
+    <div class="container">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">Admin</p>
+          <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">ブログ管理</h1>
+          <p class="mt-3 max-w-3xl text-[color:var(--muted)]">記事一覧から選択して編集できます。新規投稿、下書き保存、Markdownコピー、ファイル出力、自動生成キューに対応しています。</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="admin-button admin-button-secondary" id="newPostButton" type="button">新規投稿</button>
+          <button class="admin-button" id="saveDraftButton" type="button">下書き保存</button>
+        </div>
+      </div>
+
+      <section class="mt-8 glass rounded-[8px] p-5">
+        <div class="grid gap-6 lg:grid-cols-[0.8fr_1fr]">
+          <div>
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">Automation</p>
+            <h2 class="mt-2 font-serif text-2xl font-bold text-ruby dark:text-blush">ブログ自動投稿</h2>
+            <p class="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+              投稿方法を全自動または半自動から選べます。半自動では下書きまで保存し、人間が内容を確認してから公開します。
+            </p>
+          </div>
+          <div class="grid gap-4">
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="automation-choice">
+                <input checked name="automationMode" type="radio" value="semi" />
+                <span>
+                  <strong>半自動</strong>
+                  <small>下書き保存まで。承認後に公開。</small>
+                </span>
+              </label>
+              <label class="automation-choice">
+                <input name="automationMode" type="radio" value="auto" />
+                <span>
+                  <strong>全自動</strong>
+                  <small>API接続時だけ自動公開。</small>
+                </span>
+              </label>
+            </div>
+            <div class="grid gap-3 md:grid-cols-[1fr_180px]">
+              <label class="grid gap-2 text-sm font-bold">
+                記事テーマ
+                <input class="admin-input" id="automationTopic" type="text" placeholder="例: 復縁したい時にやってはいけないこと" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold">
+                予約日
+                <input class="admin-input" id="automationDate" type="date" />
+              </label>
+            </div>
+            <div class="grid gap-3 md:grid-cols-3">
+              <label class="grid gap-2 text-sm font-bold">
+                カテゴリ
+                <input class="admin-input" id="automationCategory" type="text" value="恋愛占い" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold md:col-span-2">
+                タグ
+                <input class="admin-input" id="automationTags" type="text" value="恋愛占い, タロット占い, 復縁占い" />
+              </label>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button class="admin-button" id="generateDraftButton" type="button">記事案を作成</button>
+              <button class="admin-button admin-button-secondary" id="runAutomationButton" type="button">選択モードで処理</button>
+              <span class="inline-flex min-h-11 items-center rounded-full border border-[var(--line)] px-4 text-sm text-[color:var(--muted)]" id="automationEndpointStatus"></span>
+            </div>
+            <p class="text-sm text-[color:var(--muted)]" id="automationStatus">未実行</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-[360px_1fr]">
+        <aside class="glass rounded-[8px] p-4">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-serif text-2xl font-bold">記事一覧</h2>
+            <span class="rounded-full border border-[var(--line)] px-3 py-1 text-xs text-[color:var(--muted)]" id="postCount"></span>
+          </div>
+          <label class="mt-4 block text-sm font-bold" for="postSearch">検索</label>
+          <input class="admin-input mt-2" id="postSearch" type="search" placeholder="タイトル・カテゴリ・タグ" />
+          <div class="mt-4 grid max-h-[640px] gap-3 overflow-auto pr-1" id="postList"></div>
+        </aside>
+
+        <div class="grid gap-6">
+          <form class="glass grid gap-5 rounded-[8px] p-5" id="editorForm">
+            <div class="grid gap-4 md:grid-cols-2">
+              <label class="grid gap-2 text-sm font-bold">
+                スラッグ
+                <input class="admin-input" id="slug" name="slug" required placeholder="fukuen-uranai-timing" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold">
+                公開日
+                <input class="admin-input" id="pubDate" name="pubDate" required type="date" />
+              </label>
+            </div>
+
+            <label class="grid gap-2 text-sm font-bold">
+              タイトル
+              <input class="admin-input" id="title" name="title" required placeholder="記事タイトル" />
+            </label>
+
+            <label class="grid gap-2 text-sm font-bold">
+              説明文
+              <textarea class="admin-input min-h-24" id="description" name="description" required placeholder="検索結果やOGPに使う説明文"></textarea>
+            </label>
+
+            <div class="grid gap-4 md:grid-cols-3">
+              <label class="grid gap-2 text-sm font-bold">
+                カテゴリ
+                <input class="admin-input" id="category" name="category" required placeholder="復縁占い" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold">
+                タグ
+                <input class="admin-input" id="tags" name="tags" placeholder="恋愛占い, タロット占い" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold">
+                更新日
+                <input class="admin-input" id="updatedDate" name="updatedDate" type="date" />
+              </label>
+            </div>
+
+            <label class="flex items-center gap-2 text-sm font-bold">
+              <input id="featured" name="featured" type="checkbox" />
+              トップページに優先表示する
+            </label>
+
+            <label class="grid gap-2 text-sm font-bold">
+              本文
+              <textarea class="admin-input min-h-[420px] font-mono text-sm leading-7" id="body" name="body" required placeholder="## 見出し&#10;&#10;本文を入力"></textarea>
+            </label>
+
+            <div class="flex flex-wrap gap-2">
+              <button class="admin-button" id="copyMarkdownButton" type="button">Markdownをコピー</button>
+              <button class="admin-button admin-button-secondary" id="downloadMarkdownButton" type="button">.mdをダウンロード</button>
+              <a class="admin-button admin-button-ghost" id="previewLink" href="/blog/" target="_blank" rel="noreferrer">公開ページを開く</a>
+            </div>
+          </form>
+
+          <aside class="glass rounded-[8px] p-5">
+            <div class="flex items-center justify-between gap-3">
+              <h2 class="font-serif text-2xl font-bold">Markdown出力</h2>
+              <span class="text-xs text-[color:var(--muted)]" id="draftStatus">未保存</span>
+            </div>
+            <pre class="mt-4 max-h-[420px] overflow-auto rounded-[8px] border border-[var(--line)] bg-white/55 p-4 text-sm leading-7 dark:bg-white/5"><code id="markdownOutput"></code></pre>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .admin-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .dark .admin-input {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-input:focus {
+      border-color: rgba(166, 35, 70, 0.5);
+      box-shadow: 0 0 0 3px rgba(166, 35, 70, 0.12);
+    }
+
+    .admin-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 999px;
+      background: var(--ruby);
+      padding: 0.7rem 1.1rem;
+      color: white;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .admin-button-secondary {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--ruby);
+    }
+
+    .dark .admin-button-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--blush);
+    }
+
+    .admin-button-ghost {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+    }
+
+    .post-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.48);
+      padding: 0.9rem;
+      text-align: left;
+    }
+
+    .dark .post-item {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .post-item[aria-current="true"] {
+      border-color: rgba(166, 35, 70, 0.55);
+      box-shadow: 0 0 0 3px rgba(166, 35, 70, 0.12);
+    }
+
+    .automation-choice {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.52);
+      padding: 1rem;
+    }
+
+    .dark .automation-choice {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .automation-choice input {
+      margin-top: 0.25rem;
+      accent-color: var(--ruby);
+    }
+
+    .automation-choice strong,
+    .automation-choice small {
+      display: block;
+    }
+
+    .automation-choice small {
+      margin-top: 0.25rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+  </style>
+
+  <script is:inline define:vars={{ posts, blogAutomationEndpoint }}>
+    const initialPosts = posts;
+    const storageKey = 'ruby-hitomi-blog-drafts';
+    const automationSettingsKey = 'ruby-hitomi-blog-automation-settings';
+    const fields = {
+      slug: document.querySelector('#slug'),
+      title: document.querySelector('#title'),
+      description: document.querySelector('#description'),
+      pubDate: document.querySelector('#pubDate'),
+      updatedDate: document.querySelector('#updatedDate'),
+      category: document.querySelector('#category'),
+      tags: document.querySelector('#tags'),
+      featured: document.querySelector('#featured'),
+      body: document.querySelector('#body')
+    };
+    const postList = document.querySelector('#postList');
+    const postSearch = document.querySelector('#postSearch');
+    const postCount = document.querySelector('#postCount');
+    const markdownOutput = document.querySelector('#markdownOutput');
+    const previewLink = document.querySelector('#previewLink');
+    const draftStatus = document.querySelector('#draftStatus');
+    const automationTopic = document.querySelector('#automationTopic');
+    const automationDate = document.querySelector('#automationDate');
+    const automationCategory = document.querySelector('#automationCategory');
+    const automationTags = document.querySelector('#automationTags');
+    const automationStatus = document.querySelector('#automationStatus');
+    const automationEndpointStatus = document.querySelector('#automationEndpointStatus');
+    let selectedSlug = '';
+
+    const today = () => new Date().toISOString().slice(0, 10);
+    const getDrafts = () => JSON.parse(localStorage.getItem(storageKey) || '[]');
+    const setDrafts = (drafts) => localStorage.setItem(storageKey, JSON.stringify(drafts));
+    const escapeYaml = (value) => String(value || '').replaceAll('"', '\\"');
+    const normalizeSlug = (value) =>
+      String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    const japaneseSlug = (value) => {
+      const normalized = normalizeSlug(value);
+      if (normalized) return normalized;
+      const seed = String(value || 'blog').trim() || 'blog';
+      let hash = 0;
+      for (const char of seed) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+      return `blog-${hash.toString(36)}`;
+    };
+
+    const getAutomationMode = () => document.querySelector('input[name="automationMode"]:checked')?.value || 'semi';
+    const setAutomationMode = (mode) => {
+      const input = document.querySelector(`input[name="automationMode"][value="${mode}"]`);
+      if (input) input.checked = true;
+    };
+    const saveAutomationSettings = () => {
+      localStorage.setItem(automationSettingsKey, JSON.stringify({ mode: getAutomationMode() }));
+    };
+    const loadAutomationSettings = () => {
+      const settings = JSON.parse(localStorage.getItem(automationSettingsKey) || '{}');
+      setAutomationMode(settings.mode === 'auto' ? 'auto' : 'semi');
+    };
+
+    const getAllPosts = () => {
+      const drafts = getDrafts();
+      const merged = new Map(initialPosts.map((post) => [post.slug, { ...post, source: 'published' }]));
+      drafts.forEach((draft) => merged.set(draft.slug, { ...draft, source: 'draft' }));
+      return [...merged.values()].sort((a, b) => String(b.pubDate).localeCompare(String(a.pubDate)));
+    };
+
+    const readForm = () => ({
+      slug: normalizeSlug(fields.slug.value),
+      title: fields.title.value.trim(),
+      description: fields.description.value.trim(),
+      pubDate: fields.pubDate.value || today(),
+      updatedDate: fields.updatedDate.value,
+      category: fields.category.value.trim(),
+      tags: fields.tags.value.split(',').map((tag) => tag.trim()).filter(Boolean),
+      featured: fields.featured.checked,
+      body: fields.body.value.trim()
+    });
+
+    const toMarkdown = (post) => {
+      const tags = `[${post.tags.map((tag) => `"${escapeYaml(tag)}"`).join(', ')}]`;
+      const updatedDate = post.updatedDate ? `updatedDate: ${post.updatedDate}\n` : '';
+      return `---\ntitle: "${escapeYaml(post.title)}"\ndescription: "${escapeYaml(post.description)}"\npubDate: ${post.pubDate}\n${updatedDate}category: "${escapeYaml(post.category)}"\ntags: ${tags}\nfeatured: ${post.featured ? 'true' : 'false'}\n---\n\n${post.body}\n`;
+    };
+
+    const buildGeneratedPost = () => {
+      const topic = automationTopic.value.trim();
+      const date = automationDate.value || today();
+      const category = automationCategory.value.trim() || '恋愛占い';
+      const tags = automationTags.value.split(',').map((tag) => tag.trim()).filter(Boolean);
+      if (!topic) {
+        automationStatus.textContent = '記事テーマを入力してください';
+        return null;
+      }
+      return {
+        slug: japaneseSlug(topic),
+        title: topic,
+        description: `${topic}について、恋愛や復縁で悩む方に向けて、タロット鑑定の視点から落ち着いて整理します。`,
+        pubDate: date,
+        updatedDate: '',
+        category,
+        tags: tags.length ? tags : ['恋愛占い'],
+        featured: false,
+        body: `## ${topic}\n\n恋愛や復縁で迷っているときは、相手の気持ちだけでなく、自分が安心して選べる行動を整理することが大切です。\n\n## 今の状況を整理する\n\nまずは、連絡の頻度、相手の反応、自分が不安になりやすい場面を分けて見ていきます。気持ちが大きく揺れている時ほど、事実と想像を分けることで、次に取る行動が見えやすくなります。\n\n## 鑑定で見ていくこと\n\nルビー瞳の鑑定では、タロットとルノルマンカードを使い、今の関係性、相手の本音、今後の流れを丁寧に読み解きます。未来を断定するのではなく、よりよい選択をするためのヒントとしてお伝えします。\n\n## ひとりで抱え込まないために\n\n不安が強いときほど、急いで答えを出そうとしてしまいます。まずは今の気持ちを整理し、無理のない一歩を一緒に考えていきましょう。\n`
+      };
+    };
+
+    const fillForm = (post) => {
+      selectedSlug = post.slug;
+      fields.slug.value = post.slug;
+      fields.title.value = post.title;
+      fields.description.value = post.description;
+      fields.pubDate.value = post.pubDate;
+      fields.updatedDate.value = post.updatedDate || '';
+      fields.category.value = post.category;
+      fields.tags.value = post.tags.join(', ');
+      fields.featured.checked = Boolean(post.featured);
+      fields.body.value = post.body;
+      previewLink.href = `/blog/${post.slug}/`;
+      updateOutput();
+      renderList();
+    };
+
+    const updateOutput = () => {
+      const post = readForm();
+      markdownOutput.textContent = toMarkdown(post);
+      previewLink.href = post.slug ? `/blog/${post.slug}/` : '/blog/';
+    };
+
+    const renderList = () => {
+      const query = postSearch.value.trim().toLowerCase();
+      const items = getAllPosts().filter((post) => {
+        const haystack = [post.title, post.description, post.category, post.slug, post.tags.join(' ')].join(' ').toLowerCase();
+        return haystack.includes(query);
+      });
+      postCount.textContent = `${items.length}件`;
+      postList.innerHTML = '';
+      items.forEach((post) => {
+        const button = document.createElement('button');
+        button.className = 'post-item';
+        button.type = 'button';
+        button.setAttribute('aria-current', post.slug === selectedSlug ? 'true' : 'false');
+        button.innerHTML = `<span class="block text-sm font-bold">${post.title}</span><span class="mt-1 block text-xs text-[color:var(--muted)]">${post.pubDate} / ${post.category}${post.source === 'draft' ? ' / 下書き' : ''}</span>`;
+        button.addEventListener('click', () => fillForm(post));
+        postList.append(button);
+      });
+    };
+
+    const saveDraft = () => {
+      const post = readForm();
+      if (!post.slug || !post.title) {
+        draftStatus.textContent = 'スラッグとタイトルが必要です';
+        return;
+      }
+      const drafts = getDrafts().filter((draft) => draft.slug !== post.slug && draft.slug !== selectedSlug);
+      drafts.push(post);
+      setDrafts(drafts);
+      selectedSlug = post.slug;
+      draftStatus.textContent = `下書き保存済み: ${new Date().toLocaleTimeString('ja-JP')}`;
+      renderList();
+      updateOutput();
+    };
+
+    const savePostAsDraft = (post) => {
+      const drafts = getDrafts().filter((draft) => draft.slug !== post.slug);
+      drafts.push(post);
+      setDrafts(drafts);
+      selectedSlug = post.slug;
+      fillForm(post);
+      draftStatus.textContent = `下書き保存済み: ${new Date().toLocaleTimeString('ja-JP')}`;
+      automationStatus.textContent = '半自動モードで下書きに保存しました。内容を確認してから公開してください。';
+    };
+
+    const publishPostAutomatically = async (post) => {
+      if (!blogAutomationEndpoint) {
+        savePostAsDraft(post);
+        automationStatus.textContent = '全自動モードですが公開APIが未設定のため、下書きに保存しました。';
+        return;
+      }
+
+      const response = await fetch(blogAutomationEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: post.slug,
+          markdown: toMarkdown(post),
+          source: 'ruby-hitomi-admin'
+        })
+      });
+
+      if (!response.ok) {
+        savePostAsDraft(post);
+        automationStatus.textContent = `公開APIでエラーが出たため、下書きに保存しました。HTTP ${response.status}`;
+        return;
+      }
+
+      automationStatus.textContent = '全自動モードで公開APIへ送信しました。公開反映はAPI側の処理結果を確認してください。';
+    };
+
+    document.querySelector('#newPostButton').addEventListener('click', () => {
+      fillForm({
+        slug: '',
+        title: '',
+        description: '',
+        pubDate: today(),
+        updatedDate: '',
+        category: '恋愛占い',
+        tags: ['恋愛占い'],
+        featured: false,
+        body: '## 見出し\n\n本文を入力してください。'
+      });
+      selectedSlug = '';
+      renderList();
+    });
+
+    document.querySelector('#saveDraftButton').addEventListener('click', saveDraft);
+    document.querySelector('#generateDraftButton').addEventListener('click', () => {
+      const post = buildGeneratedPost();
+      if (!post) return;
+      fillForm(post);
+      automationStatus.textContent = '記事案を作成しました。必要に応じて本文を編集してください。';
+    });
+    document.querySelector('#runAutomationButton').addEventListener('click', async () => {
+      saveAutomationSettings();
+      const post = buildGeneratedPost();
+      if (!post) return;
+      if (getAutomationMode() === 'auto') {
+        await publishPostAutomatically(post);
+        return;
+      }
+      savePostAsDraft(post);
+    });
+    document.querySelector('#copyMarkdownButton').addEventListener('click', async () => {
+      updateOutput();
+      await navigator.clipboard.writeText(markdownOutput.textContent || '');
+      draftStatus.textContent = 'Markdownをコピーしました';
+    });
+    document.querySelector('#downloadMarkdownButton').addEventListener('click', () => {
+      const post = readForm();
+      const blob = new Blob([toMarkdown(post)], { type: 'text/markdown;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${post.slug || 'new-post'}.md`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+    Object.values(fields).forEach((field) => field.addEventListener('input', updateOutput));
+    fields.featured.addEventListener('change', updateOutput);
+    postSearch.addEventListener('input', renderList);
+    document.querySelectorAll('input[name="automationMode"]').forEach((input) => {
+      input.addEventListener('change', saveAutomationSettings);
+    });
+
+    loadAutomationSettings();
+    automationDate.value = today();
+    automationEndpointStatus.textContent = blogAutomationEndpoint ? '公開API 設定済み' : '公開API 未設定';
+    renderList();
+    fillForm(getAllPosts()[0] || {
+      slug: '',
+      title: '',
+      description: '',
+      pubDate: today(),
+      updatedDate: '',
+      category: '恋愛占い',
+      tags: ['恋愛占い'],
+      featured: false,
+      body: ''
+    });
+  </script>
+</BaseLayout>

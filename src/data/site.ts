@@ -3,15 +3,15 @@ export const site = {
   title: 'ルビー瞳 公式サイト | 恋愛・復縁専門のタロット占い',
   description:
     '恋愛・復縁・相手の気持ちに寄り添うタロットとルノルマンカード鑑定。鑑定歴6年、鑑定実績6000件以上。電話鑑定、Zoom鑑定、メール鑑定に対応しています。',
-  url: 'https://ruby-hitomi.com',
-  lineUrl: 'https://line.me/R/ti/p/@ruby-hitomi',
-  bookingUrl: 'https://coubic.com/ruby-hitomi',
-  email: 'info@ruby-hitomi.com',
+  url: 'https://ruby-hitomi.fortunestudios.jp',
+  lineUrl: 'https://line.me/R/ti/p/@965fkxzw',
+  bookingUrl: 'https://ruby-hitomi.stores.jp/reserve/ruby-hitomi',
+  email: 'info-ruby-hitomi@fortunestudios.jp',
   socials: {
-    instagram: 'https://www.instagram.com/',
-    tiktok: 'https://www.tiktok.com/',
-    x: 'https://x.com/',
-    youtube: 'https://www.youtube.com/'
+    instagram: '',
+    tiktok: '',
+    x: '',
+    youtube: ''
   }
 };
 
@@ -20,6 +20,7 @@ export const navItems = [
   { href: '/profile/', label: 'プロフィール' },
   { href: '/divination/', label: '占術' },
   { href: '/menus/', label: '鑑定メニュー' },
+  { href: '/free-fortune/', label: '無料占い' },
   { href: '/pricing/', label: '料金' },
   { href: '/booking/', label: '予約方法' },
   { href: '/faq/', label: 'よくある質問' },
@@ -41,39 +42,36 @@ export const specialties = [
 
 export const services = [
   {
-    title: '初回お試し鑑定',
+    title: 'AIひとみ先生の無料占い',
+    description:
+      '今の恋の状況を1テーマで整理する無料ミニ占いです。迷いが強いときの最初の一歩としてご利用ください。',
+    price: '無料',
+    duration: '約1分',
+    href: '/free-fortune/'
+  },
+  {
+    title: '【初回限定】通話鑑定 15分',
     description:
       '初めての方限定の短時間コースです。今いちばん気になることを1テーマに絞り、鑑定の雰囲気を安心してお試しいただけます。',
-    price: '2,000円',
-    duration: '15分'
+    price: '3,000円',
+    duration: '15分',
+    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=1056853'
   },
   {
-    title: '相手の気持ち鑑定',
+    title: '通話鑑定 30分',
     description:
       '連絡が来ない理由、言葉にされない本音、今の距離感をタロットとルノルマンで丁寧に読み解きます。',
-    price: '4,400円',
-    duration: '30分'
+    price: '6,000円',
+    duration: '30分',
+    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=843818'
   },
   {
-    title: '復縁リーディング',
-    description:
-      '復縁の可能性、動くべき時期、避けたい行動を整理し、現実的に関係を整える道筋をお伝えします。',
-    price: '6,600円',
-    duration: '45分'
-  },
-  {
-    title: '恋愛総合セッション',
+    title: '通話鑑定 60分',
     description:
       '片思い、不倫、結婚、ツインレイなど複雑な恋の流れを深く見つめる人気メニューです。',
-    price: '9,900円',
-    duration: '70分'
-  },
-  {
-    title: 'メール鑑定',
-    description:
-      '文章で落ち着いて相談したい方へ。鑑定結果を何度も読み返せるため、初めての方にも選ばれています。',
-    price: '5,500円',
-    duration: '72時間以内'
+    price: '10,000円',
+    duration: '60分',
+    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=800546'
   }
 ];
 

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { site } from '@/data/site';
 ---
 <BaseLayout title="プライバシーポリシー" description="ルビー瞳公式サイトのプライバシーポリシー。">
   <Breadcrumbs items={[{ label: 'プライバシーポリシー' }]} />
@@ -16,7 +17,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro';
       <p>当サイトでは、アクセス状況の把握、流入元の確認、予約導線の改善のため、Cloudflare Web Analytics、Google Analytics 4、Microsoft Clarityを利用します。</p>
       <p>これらの解析では、ページ閲覧、参照元、ボタンのクリックなどを計測しますが、氏名、メールアドレス、相談内容などの個人情報を解析イベントとして送信しません。</p>
       <h2>お問い合わせ</h2>
-      <p>個人情報に関するお問い合わせは、公式LINEまたはメールにてご連絡ください。</p>
+      <p>個人情報に関するお問い合わせは、公式LINEまたは<a href={`mailto:${site.email}`}>{site.email}</a>までご連絡ください。</p>
     </div>
   </section>
 </BaseLayout>

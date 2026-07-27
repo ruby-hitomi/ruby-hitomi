@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ruby-hitomi-v1';
+const CACHE_NAME = 'ruby-hitomi-v2';
 const CORE_ASSETS = ['/', '/site.webmanifest', '/assets/hero-ruby-hitomi.svg'];
 
 self.addEventListener('install', (event) => {
