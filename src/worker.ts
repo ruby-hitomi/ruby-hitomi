@@ -125,6 +125,7 @@ const replyToLine = async (replyToken: string, env: Env) => {
 };
 
 const handleLineWebhook = async (request: Request, env: Env) => {
+  if (request.method === 'GET' || request.method === 'HEAD') return textResponse('OK');
   if (request.method !== 'POST') return textResponse('Method Not Allowed', 405);
 
   const bodyText = await request.text();
