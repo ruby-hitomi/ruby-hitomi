@@ -5,15 +5,15 @@ const legal = [
   { href: '/privacy/', label: 'プライバシーポリシー' },
   { href: '/terms/', label: '利用規約' }
 ];
-const admin = { href: '/admin/', label: 'rubye-hitomi@gmail.com 管理' };
 ---
 <footer class="border-t border-[var(--line)] bg-white/42 py-12 dark:bg-white/5">
   <div class="container grid gap-10 md:grid-cols-[1.2fr_1fr_1fr]">
     <div>
-      <p class="font-serif text-2xl font-bold text-ruby dark:text-blush">ルビー瞳</p>
+      <p class="font-serif text-2xl font-bold text-ruby dark:text-blush">{site.name}</p>
       <p class="mt-3 text-sm text-[color:var(--muted)]">恋愛・復縁・相手の気持ちに寄り添う、タロットとルノルマンカードのオンライン鑑定。</p>
       <div class="mt-5 flex flex-wrap gap-2 text-sm">
         <a class="rounded-full border border-[var(--line)] px-3 py-1.5" href={site.lineUrl} data-ga-event="line_click">LINE</a>
+        <a class="rounded-full border border-[var(--line)] px-3 py-1.5" href={`mailto:${site.email}`}>Mail</a>
         {site.socials.instagram && <a class="rounded-full border border-[var(--line)] px-3 py-1.5" href={site.socials.instagram}>Instagram</a>}
         {site.socials.tiktok && <a class="rounded-full border border-[var(--line)] px-3 py-1.5" href={site.socials.tiktok}>TikTok</a>}
         {site.socials.x && <a class="rounded-full border border-[var(--line)] px-3 py-1.5" href={site.socials.x}>X</a>}
@@ -30,9 +30,6 @@ const admin = { href: '/admin/', label: 'rubye-hitomi@gmail.com 管理' };
       <ul class="mt-3 grid gap-2 text-sm text-[color:var(--muted)]">
         {legal.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
       </ul>
-      <p class="mt-5 text-xs text-[color:var(--muted)]">
-        <a href={admin.href} rel="nofollow">{admin.label}</a>
-      </p>
       <p class="mt-6 text-xs text-[color:var(--muted)]">© {new Date().getFullYear()} Ruby Hitomi. All rights reserved.</p>
     </div>
   </div>

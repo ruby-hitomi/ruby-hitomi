@@ -1,4 +1,4 @@
-export const site = {
+﻿export const site = {
   name: 'ルビー瞳',
   title: 'ルビー瞳 公式サイト | 恋愛・復縁専門のタロット占い',
   description:
@@ -47,7 +47,8 @@ export const services = [
       '今の恋の状況を1テーマで整理する無料ミニ占いです。迷いが強いときの最初の一歩としてご利用ください。',
     price: '無料',
     duration: '約1分',
-    href: '/free-fortune/'
+    href: '/free-fortune/',
+    ctaLabel: '無料で占う'
   },
   {
     title: '【初回限定】通話鑑定 15分',
@@ -63,7 +64,8 @@ export const services = [
       '連絡が来ない理由、言葉にされない本音、今の距離感をタロットとルノルマンで丁寧に読み解きます。',
     price: '6,000円',
     duration: '30分',
-    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=843818'
+    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=843818',
+    badge: 'おすすめ'
   },
   {
     title: '通話鑑定 60分',
@@ -71,7 +73,8 @@ export const services = [
       '片思い、不倫、結婚、ツインレイなど複雑な恋の流れを深く見つめる人気メニューです。',
     price: '10,000円',
     duration: '60分',
-    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=800546'
+    href: 'https://ruby-hitomi.stores.jp/reserve/signin/user?return_to=/reserve/ruby-hitomi/1757117/book/course_type?courseCanonicalId=800546',
+    badge: 'じっくり'
   }
 ];
 
@@ -96,12 +99,12 @@ export const faqs = [
   {
     question: '不倫や復縁の相談も可能ですか？',
     answer:
-      '可能です。否定や決めつけをせず、今の関係性、相手の気持ち、今後の動き方を現実的に読み解きます。'
+      '可能です。断定や決めつけをせず、今の関係性、相手の気持ち、今後の動き方を現実的に読み解きます。'
   },
   {
     question: '支払い方法を教えてください。',
     answer:
-      '現在はSTORES予約のカード決済を基本導線にしています。将来的にPayPay、Stripe、Squareにも対応しやすい構成です。'
+      '現在はSTORES予約のカード決済を基本導線にしています。将来的にPayPay、Stripe、Squareにも対応しやすい設計です。'
   },
   {
     question: 'Zoomや電話が苦手でも大丈夫ですか？',
@@ -111,6 +114,6 @@ export const faqs = [
   {
     question: '鑑定できない内容はありますか？',
     answer:
-      '人の生死、寿命、病気の診断や治療、妊娠・出産、法律・裁判、投資・ギャンブルなど専門資格が必要な判断、試験・採用・合否・当落など結果の断定、失せ物・行方不明者・犯罪・霊障や呪いに関すること、第三者を傷つける目的や相手を支配・操作する目的のご相談はお受けしておりません。鑑定では未来を断定するのではなく、今の状況を整理し、よりよい選択をするためのヒントをお伝えします。必要に応じて、医療機関、法律専門家、公的窓口など適切な専門機関へご相談ください。'
+      '人の生死、寿命、病気の診断や治療、妊娠・出産、法律の裁判、投資・ギャンブル、試験の合否、犯罪や霊障に関すること、第三者を傷つける目的や相手を支配・操作する目的のご相談はお受けしておりません。必要に応じて医療機関、法律専門家、公的相談窓口など適切な専門機関へご相談ください。'
   }
 ];

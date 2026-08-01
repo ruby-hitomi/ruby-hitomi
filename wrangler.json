@@ -1,4 +1,4 @@
-{
+﻿{
     "$schema":  "./node_modules/wrangler/config-schema.json",
     "name":  "ruby-hitomi",
     "compatibility_date":  "2026-07-08",
@@ -18,7 +18,7 @@
                          {
                              "binding":  "DB",
                              "database_name":  "ruby-hitomi",
-                             "database_id":  "0dc72ee4-f34f-4d6c-9d14-861cbc150a44"
+                             "database_id":  "0ba611b6-06ef-4e33-ad54-183f323399d3"
                          }
                      ],
     "workers_dev":  true,
@@ -28,5 +28,6 @@
                        "zone_name":  "fortunestudios.jp",
                        "pattern":  "ruby-hitomi.fortunestudios.jp/*"
                    }
-               ]
+               ],
+    "account_id":  "cfda786a82241adf6b21f772dbc87544"
 }

@@ -6,158 +6,41 @@ const tools = [
   {
     name: 'Cloudflare Web Analytics',
     configured: Boolean(import.meta.env.PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN),
-    description: 'サイト全体のアクセス数、流入、閲覧ページを確認します。',
+    description: 'サイト全体のアクセス数、参照元、閲覧ページを確認します。',
     href: 'https://dash.cloudflare.com/?to=/:account/web-analytics'
   },
   {
     name: 'Google Analytics 4',
     configured: Boolean(import.meta.env.PUBLIC_GA_MEASUREMENT_ID),
-    description: '予約導線のクリックイベントや流入経路を確認します。',
+    description: '予約導線のクリックイベント、外部リンククリック、流入元を確認します。',
     href: 'https://analytics.google.com/analytics/web/'
   },
   {
     name: 'Microsoft Clarity',
     configured: Boolean(import.meta.env.PUBLIC_CLARITY_PROJECT_ID),
-    description: 'ヒートマップと録画で、ページ上の迷いや離脱箇所を確認します。',
+    description: 'ヒートマップや録画で、ページ上の動きを確認します。',
     href: 'https://clarity.microsoft.com/projects'
   }
 ];
 
 const events = [
-  { name: 'line_click', label: 'LINEクリック' },
   { name: 'stores_booking_click', label: 'STORES予約クリック' },
+  { name: 'line_click', label: 'LINEクリック' },
+  { name: 'link_click', label: '通常リンククリック' },
   { name: 'contact_click', label: 'お問い合わせクリック' },
   { name: 'phone_reading_click', label: '電話鑑定クリック' },
   { name: 'zoom_reading_click', label: 'Zoom鑑定クリック' }
 ];
-
-const summaryCards = [
-  {
-    label: '予約クリック率',
-    target: '目標 3%以上',
-    good: '予約導線は機能しています。次は流入数を増やす施策を優先してください。',
-    caution: 'メニュー説明、初回15分の見せ方、予約ボタンの位置を改善してください。'
-  },
-  {
-    label: 'LINEクリック率',
-    target: '目標 2%以上',
-    good: '相談前の不安をLINEへ逃がせています。返信テンプレートを整えると予約につながります。',
-    caution: 'LINEで何を相談できるか、ボタン周辺に安心材料を追加してください。'
-  },
-  {
-    label: 'メニュー閲覧率',
-    target: '目標 30%以上',
-    good: '鑑定メニューまで見られています。料金表と予約導線の分かりやすさを維持してください。',
-    caution: 'トップからメニューへの導線と、ファーストビューのボタン文言を調整してください。'
-  }
-];
 ---
-<BaseLayout title="アクセス解析サマリー" description="ルビー瞳公式サイトのアクセス解析サマリー管理画面。AIが数値を読み解き、振り返り下書きを作成します。">
-  <Breadcrumbs items={[{ href: '/admin/', label: '管理画面' }, { label: 'アクセス解析サマリー' }]} />
+<BaseLayout title="アクセス解析" description="ルビー瞳公式サイトの共通アクセス解析設定とイベント計測の確認画面。">
+  <Breadcrumbs items={[{ href: '/admin/', label: '管理画面' }, { label: 'アクセス解析' }]} />
   <section class="section pt-6">
     <div class="container">
       <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">Analytics</p>
-      <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">アクセス解析サマリー</h1>
+      <h1 class="mt-2 font-serif text-4xl font-bold text-ruby dark:text-blush">アクセス解析</h1>
       <p class="mt-3 max-w-3xl text-[color:var(--muted)]">
-        GA4、Cloudflare、Clarityで確認した数値を入力すると、予約率・LINE率・メニュー閲覧率を計算し、AIが運用サマリーの下書きを作成します。
+        全ページ共通のアクセス解析を `Analytics.astro` で読み込みます。管理画面配下は計測対象から除外し、予約・LINE・外部リンクのクリックを共通イベントとして送信します。
       </p>
-
-      <section class="mt-8 rounded-[8px] border border-[var(--line)] bg-white/55 p-5 dark:bg-white/5">
-        <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">AI Draft</p>
-            <h2 class="mt-2 font-serif text-3xl font-bold text-ruby dark:text-blush">数値から振り返り下書きを作成</h2>
-            <p class="mt-3 text-sm leading-7 text-[color:var(--muted)]">
-              入力したアクセス解析データをAIが読み解き、管理メモ欄にそのまま編集できる下書きを表示します。保存すると履歴に残ります。
-            </p>
-          </div>
-          <div class="grid gap-3 sm:grid-cols-2">
-            <label class="grid gap-1 text-sm font-bold sm:col-span-2">
-              期間名
-              <input class="rounded-[8px] border border-[var(--line)] bg-white/80 px-3 py-2 text-base font-normal text-ink dark:bg-white/10 dark:text-white" data-period-label placeholder="例: 2026年8月 第1週" />
-            </label>
-            <label class="grid gap-1 text-sm font-bold">
-              訪問数
-              <input class="rounded-[8px] border border-[var(--line)] bg-white/80 px-3 py-2 text-base font-normal text-ink dark:bg-white/10 dark:text-white" data-analytics-input="visits" inputmode="numeric" placeholder="例: 300" />
-            </label>
-            <label class="grid gap-1 text-sm font-bold">
-              STORES予約クリック
-              <input class="rounded-[8px] border border-[var(--line)] bg-white/80 px-3 py-2 text-base font-normal text-ink dark:bg-white/10 dark:text-white" data-analytics-input="booking" inputmode="numeric" placeholder="例: 12" />
-            </label>
-            <label class="grid gap-1 text-sm font-bold">
-              LINEクリック
-              <input class="rounded-[8px] border border-[var(--line)] bg-white/80 px-3 py-2 text-base font-normal text-ink dark:bg-white/10 dark:text-white" data-analytics-input="line" inputmode="numeric" placeholder="例: 9" />
-            </label>
-            <label class="grid gap-1 text-sm font-bold">
-              メニューページ閲覧
-              <input class="rounded-[8px] border border-[var(--line)] bg-white/80 px-3 py-2 text-base font-normal text-ink dark:bg-white/10 dark:text-white" data-analytics-input="menus" inputmode="numeric" placeholder="例: 80" />
-            </label>
-          </div>
-        </div>
-
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-          {summaryCards.map((card, index) => (
-            <article class="rounded-[8px] border border-[var(--line)] bg-white/60 p-4 dark:bg-white/5" data-summary-card={index}>
-              <p class="text-sm font-bold text-[color:var(--muted)]">{card.label}</p>
-              <p class="mt-2 font-serif text-3xl font-bold text-ruby dark:text-blush" data-summary-rate>--%</p>
-              <p class="mt-1 text-xs font-bold text-gold">{card.target}</p>
-              <p class="mt-3 text-sm leading-7 text-[color:var(--muted)]" data-summary-message>{card.caution}</p>
-            </article>
-          ))}
-        </div>
-
-        <div class="mt-5 rounded-[8px] bg-ruby p-5 text-white">
-          <p class="text-sm font-bold tracking-[0.18em] text-blush">NEXT ACTION</p>
-          <p class="mt-2 text-lg font-bold" data-next-action>まずは訪問数、予約クリック、LINEクリック、メニュー閲覧数を入力してください。</p>
-        </div>
-
-        <div class="mt-4 grid gap-3 lg:grid-cols-[1fr_auto]">
-          <label class="grid gap-1 text-sm font-bold">
-            AIサマリー下書き・振り返りメモ
-            <textarea class="min-h-40 rounded-[8px] border border-[var(--line)] bg-white/80 px-3 py-2 text-base font-normal leading-7 text-ink dark:bg-white/10 dark:text-white" data-summary-note placeholder="数値を入力すると、AIが読み解いたサマリー下書きがここに表示されます。必要に応じて編集してから保存してください。"></textarea>
-          </label>
-          <div class="flex flex-col justify-end gap-2">
-            <button class="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--line)] px-6 py-3 text-sm font-bold text-ruby transition hover:-translate-y-0.5 dark:text-blush lg:w-auto" type="button" data-generate-summary>
-              AI下書きを再生成
-            </button>
-            <button class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gold px-6 py-3 text-sm font-bold text-ruby shadow-soft transition hover:-translate-y-0.5 lg:w-auto" type="button" data-save-summary>
-              サマリーを保存
-            </button>
-          </div>
-        </div>
-        <p class="mt-2 text-sm font-bold text-[color:var(--muted)]" data-save-status aria-live="polite"></p>
-      </section>
-
-      <section class="mt-8 rounded-[8px] border border-[var(--line)] bg-white/55 p-5 dark:bg-white/5">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-sm font-bold uppercase tracking-[0.18em] text-gold">History</p>
-            <h2 class="mt-2 font-serif text-3xl font-bold text-ruby dark:text-blush">過去のサマリー</h2>
-          </div>
-          <button class="inline-flex rounded-full border border-[var(--line)] px-4 py-2 text-sm font-bold text-ruby dark:text-blush" type="button" data-refresh-history>
-            再読み込み
-          </button>
-        </div>
-        <div class="mt-5 overflow-x-auto">
-          <table class="min-w-full text-left text-sm">
-            <thead class="border-b border-[var(--line)] text-[color:var(--muted)]">
-              <tr>
-                <th class="whitespace-nowrap px-3 py-3">期間</th>
-                <th class="whitespace-nowrap px-3 py-3">訪問</th>
-                <th class="whitespace-nowrap px-3 py-3">予約率</th>
-                <th class="whitespace-nowrap px-3 py-3">LINE率</th>
-                <th class="whitespace-nowrap px-3 py-3">メニュー率</th>
-                <th class="min-w-72 px-3 py-3">次の一手</th>
-              </tr>
-            </thead>
-            <tbody data-summary-history>
-              <tr>
-                <td class="px-3 py-5 text-[color:var(--muted)]" colspan="6">保存済みサマリーを読み込み中です。</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
 
       <div class="mt-8 grid gap-5 md:grid-cols-3">
         {tools.map((tool) => (
@@ -179,282 +62,29 @@ const summaryCards = [
         ))}
       </div>
 
-      <section class="mt-8 glass rounded-[8px] p-6">
-        <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">計測イベント</h2>
-        <div class="mt-5 grid gap-3 md:grid-cols-2">
-          {events.map((event) => (
-            <div class="flex flex-col gap-1 rounded-[8px] border border-[var(--line)] bg-white/45 p-4 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between">
-              <span class="font-bold">{event.label}</span>
-              <code class="text-sm text-[color:var(--muted)]">{event.name}</code>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+        <section class="glass rounded-[8px] p-6">
+          <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">共通イベント</h2>
+          <div class="mt-5 grid gap-3">
+            {events.map((event) => (
+              <div class="flex flex-col gap-1 rounded-[8px] border border-[var(--line)] bg-white/45 p-4 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between">
+                <span class="font-bold">{event.label}</span>
+                <code class="text-sm text-[color:var(--muted)]">{event.name}</code>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <aside class="rounded-[8px] border border-[var(--line)] bg-white/55 p-6 text-sm leading-7 dark:bg-white/5">
+          <h2 class="font-serif text-2xl font-bold text-ruby dark:text-blush">確認方法</h2>
+          <ol class="mt-4 grid list-decimal gap-2 pl-5 text-[color:var(--muted)]">
+            <li>公開サイトで予約ボタンやLINEボタンをクリックします。</li>
+            <li>GA4のリアルタイム、またはイベント画面でイベント名を確認します。</li>
+            <li>アクセス数と流入元はCloudflareまたはGA4で確認します。</li>
+            <li>ページ上の動きはMicrosoft Clarityで確認します。</li>
+          </ol>
+        </aside>
+      </div>
     </div>
   </section>
-  <script>
-    type SummaryRow = {
-      id: string;
-      created_at: string;
-      period_label: string;
-      visits: number;
-      booking_clicks: number;
-      line_clicks: number;
-      menu_views: number;
-      booking_rate: number;
-      line_rate: number;
-      menu_rate: number;
-      next_action: string;
-      note: string;
-    };
-
-    const thresholds = { booking: 0.03, line: 0.02, menus: 0.3 };
-    const messages = [
-      {
-        good: '予約導線は機能しています。次は流入数を増やす施策を優先してください。',
-        caution: 'メニュー説明、初回15分の見せ方、予約ボタンの位置を改善してください。'
-      },
-      {
-        good: '相談前の不安をLINEへ逃がせています。返信テンプレートを整えると予約につながります。',
-        caution: 'LINEで何を相談できるか、ボタン周辺に安心材料を追加してください。'
-      },
-      {
-        good: '鑑定メニューまで見られています。料金表と予約導線の分かりやすさを維持してください。',
-        caution: 'トップからメニューへの導線と、ファーストビューのボタン文言を調整してください。'
-      }
-    ];
-
-    const inputs = [...document.querySelectorAll<HTMLInputElement>('[data-analytics-input]')];
-    const cards = [...document.querySelectorAll<HTMLElement>('[data-summary-card]')];
-    const nextAction = document.querySelector<HTMLElement>('[data-next-action]');
-    const periodLabel = document.querySelector<HTMLInputElement>('[data-period-label]');
-    const note = document.querySelector<HTMLTextAreaElement>('[data-summary-note]');
-    const saveButton = document.querySelector<HTMLButtonElement>('[data-save-summary]');
-    const generateButton = document.querySelector<HTMLButtonElement>('[data-generate-summary]');
-    const refreshButton = document.querySelector<HTMLButtonElement>('[data-refresh-history]');
-    const saveStatus = document.querySelector<HTMLElement>('[data-save-status]');
-    const historyBody = document.querySelector<HTMLElement>('[data-summary-history]');
-    const apiBase = location.hostname === 'ruby-hitomi.fortunestudios.jp' ? 'https://ruby-hitomi.fortune-kanri.workers.dev' : '';
-    let draftTimer: number | undefined;
-    let userEditedNote = false;
-
-    const toNumber = (name: string) => {
-      const input = document.querySelector<HTMLInputElement>(`[data-analytics-input="${name}"]`);
-      return Number(input?.value.replace(/,/g, '') || 0);
-    };
-
-    const escapeHtml = (value: string) =>
-      value.replace(/[&<>"']/g, (char) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      })[char] || char);
-
-    const formatRate = (value: number) => `${(value * 100).toFixed(value >= 0.1 ? 0 : 1)}%`;
-    const formatDate = (value: string) => new Intl.DateTimeFormat('ja-JP', {
-      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-    }).format(new Date(value));
-
-    const getSummaryState = () => {
-      const visits = toNumber('visits');
-      const bookingClicks = toNumber('booking');
-      const lineClicks = toNumber('line');
-      const menuViews = toNumber('menus');
-      return {
-        visits,
-        bookingClicks,
-        lineClicks,
-        menuViews,
-        bookingRate: visits ? bookingClicks / visits : 0,
-        lineRate: visits ? lineClicks / visits : 0,
-        menuRate: visits ? menuViews / visits : 0
-      };
-    };
-
-    const getNextActionText = () => {
-      const { visits, bookingRate, lineRate, menuRate } = getSummaryState();
-      if (!visits) return 'まずは訪問数、予約クリック、LINEクリック、メニュー閲覧数を入力してください。';
-      const rates = [bookingRate, lineRate, menuRate];
-      const keys = ['booking', 'line', 'menus'] as const;
-      const weakestIndex = rates
-        .map((rate, index) => ({ index, score: rate / thresholds[keys[index]] }))
-        .sort((a, b) => a.score - b.score)[0]?.index ?? 0;
-      return [
-        '次は予約クリック率を上げます。トップとメニューカードで「初回15分」をもっと押し出してください。',
-        '次はLINEクリック率を上げます。予約前に何を相談できるかをCTA周辺に追記してください。',
-        '次はメニュー閲覧率を上げます。トップからメニューへの導線とボタン文言を調整してください。'
-      ][weakestIndex];
-    };
-
-    const updateSummary = () => {
-      const { visits, bookingRate, lineRate, menuRate } = getSummaryState();
-      const rates = [bookingRate, lineRate, menuRate];
-      const keys = ['booking', 'line', 'menus'] as const;
-
-      if (!visits) {
-        cards.forEach((card, index) => {
-          card.querySelector('[data-summary-rate]')!.textContent = '--%';
-          card.querySelector('[data-summary-message]')!.textContent = messages[index].caution;
-        });
-        if (nextAction) nextAction.textContent = getNextActionText();
-        return;
-      }
-
-      rates.forEach((rate, index) => {
-        const card = cards[index];
-        const key = keys[index];
-        const isGood = rate >= thresholds[key];
-        card.querySelector('[data-summary-rate]')!.textContent = formatRate(rate);
-        card.querySelector('[data-summary-message]')!.textContent = isGood ? messages[index].good : messages[index].caution;
-      });
-      if (nextAction) nextAction.textContent = getNextActionText();
-    };
-
-    const buildFallbackDraft = () => {
-      const summary = getSummaryState();
-      if (!summary.visits) return '';
-      const period = periodLabel?.value || '今回の期間';
-      return `${period}のアクセス解析サマリーです。訪問数は${summary.visits.toLocaleString('ja-JP')}件、予約クリック率は${formatRate(summary.bookingRate)}、LINEクリック率は${formatRate(summary.lineRate)}、メニュー閲覧率は${formatRate(summary.menuRate)}でした。\n\n現状は「${getNextActionText()}」を優先します。次回はトップページから鑑定メニューへの遷移、予約ボタンの押され方、LINE導線の反応を確認してください。`;
-    };
-
-    const generateDraft = async (force = false) => {
-      const summary = getSummaryState();
-      if (!summary.visits) {
-        if (!note?.value) note!.value = '';
-        return;
-      }
-      if (!force && userEditedNote && note?.value.trim()) return;
-
-      if (saveStatus) saveStatus.textContent = 'AIサマリー下書きを作成しています...';
-      generateButton?.setAttribute('disabled', 'true');
-
-      try {
-        const response = await fetch(`${apiBase}/api/admin/analytics-summary-draft`, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            periodLabel: periodLabel?.value,
-            visits: summary.visits,
-            bookingClicks: summary.bookingClicks,
-            lineClicks: summary.lineClicks,
-            menuViews: summary.menuViews,
-            bookingRate: summary.bookingRate,
-            lineRate: summary.lineRate,
-            menuRate: summary.menuRate,
-            nextAction: nextAction?.textContent
-          })
-        });
-        if (!response.ok) throw new Error('Failed to generate draft');
-        const payload = await response.json() as { draft?: string };
-        if (note) note.value = payload.draft || buildFallbackDraft();
-        userEditedNote = false;
-        if (saveStatus) saveStatus.textContent = 'AIサマリー下書きを作成しました。内容を確認して保存してください。';
-      } catch {
-        if (note) note.value = buildFallbackDraft();
-        userEditedNote = false;
-        if (saveStatus) saveStatus.textContent = 'AI下書きAPIを使えなかったため、簡易下書きを表示しました。';
-      } finally {
-        generateButton?.removeAttribute('disabled');
-      }
-    };
-
-    const scheduleDraft = () => {
-      window.clearTimeout(draftTimer);
-      draftTimer = window.setTimeout(() => generateDraft(false), 700);
-    };
-
-    const loadRow = (row: SummaryRow) => {
-      if (periodLabel) periodLabel.value = row.period_label;
-      const fieldMap = { visits: row.visits, booking: row.booking_clicks, line: row.line_clicks, menus: row.menu_views };
-      Object.entries(fieldMap).forEach(([name, value]) => {
-        const input = document.querySelector<HTMLInputElement>(`[data-analytics-input="${name}"]`);
-        if (input) input.value = String(value);
-      });
-      updateSummary();
-      if (note) note.value = row.note || '';
-      if (nextAction) nextAction.textContent = row.next_action || nextAction.textContent || '';
-      userEditedNote = false;
-      if (saveStatus) saveStatus.textContent = `${row.period_label} を入力欄に読み込みました。`;
-    };
-
-    const renderHistory = (rows: SummaryRow[]) => {
-      if (!historyBody) return;
-      if (!rows.length) {
-        historyBody.innerHTML = '<tr><td class="px-3 py-5 text-[color:var(--muted)]" colspan="6">まだ保存されたサマリーはありません。</td></tr>';
-        return;
-      }
-      historyBody.innerHTML = rows.map((row) => `
-        <tr class="border-b border-[var(--line)] align-top">
-          <td class="px-3 py-4">
-            <button class="text-left font-bold text-ruby underline-offset-4 hover:underline dark:text-blush" type="button" data-history-id="${escapeHtml(row.id)}">${escapeHtml(row.period_label)}</button>
-            <p class="mt-1 text-xs text-[color:var(--muted)]">${formatDate(row.created_at)}</p>
-            ${row.note ? `<p class="mt-2 max-w-80 text-xs leading-5 text-[color:var(--muted)]">${escapeHtml(row.note)}</p>` : ''}
-          </td>
-          <td class="whitespace-nowrap px-3 py-4 font-bold">${row.visits.toLocaleString('ja-JP')}</td>
-          <td class="whitespace-nowrap px-3 py-4">${formatRate(row.booking_rate)}</td>
-          <td class="whitespace-nowrap px-3 py-4">${formatRate(row.line_rate)}</td>
-          <td class="whitespace-nowrap px-3 py-4">${formatRate(row.menu_rate)}</td>
-          <td class="px-3 py-4 text-[color:var(--muted)]">${escapeHtml(row.next_action || '-')}</td>
-        </tr>
-      `).join('');
-      historyBody.querySelectorAll<HTMLButtonElement>('[data-history-id]').forEach((button) => {
-        const row = rows.find((item) => item.id === button.dataset.historyId);
-        if (row) button.addEventListener('click', () => loadRow(row));
-      });
-    };
-
-    const loadHistory = async () => {
-      try {
-        const response = await fetch(`${apiBase}/api/admin/analytics-summaries`);
-        if (!response.ok) throw new Error('Failed to load summaries');
-        const payload = await response.json() as { results?: SummaryRow[] };
-        renderHistory(payload.results ?? []);
-      } catch {
-        if (historyBody) historyBody.innerHTML = '<tr><td class="px-3 py-5 text-[color:var(--muted)]" colspan="6">サマリー履歴を読み込めませんでした。</td></tr>';
-      }
-    };
-
-    const saveSummary = async () => {
-      const summary = getSummaryState();
-      if (!summary.visits) {
-        if (saveStatus) saveStatus.textContent = '訪問数を入力してから保存してください。';
-        return;
-      }
-      if (saveStatus) saveStatus.textContent = '保存しています...';
-      saveButton?.setAttribute('disabled', 'true');
-      try {
-        const response = await fetch(`${apiBase}/api/admin/analytics-summaries`, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            periodLabel: periodLabel?.value,
-            visits: summary.visits,
-            bookingClicks: summary.bookingClicks,
-            lineClicks: summary.lineClicks,
-            menuViews: summary.menuViews,
-            nextAction: nextAction?.textContent,
-            note: note?.value
-          })
-        });
-        if (!response.ok) throw new Error('Failed to save summary');
-        if (saveStatus) saveStatus.textContent = 'サマリーを保存しました。過去のサマリーに追加されています。';
-        await loadHistory();
-      } catch {
-        if (saveStatus) saveStatus.textContent = '保存できませんでした。少し時間を置いて再度お試しください。';
-      } finally {
-        saveButton?.removeAttribute('disabled');
-      }
-    };
-
-    inputs.forEach((input) => input.addEventListener('input', () => { updateSummary(); scheduleDraft(); }));
-    periodLabel?.addEventListener('input', scheduleDraft);
-    note?.addEventListener('input', () => { userEditedNote = true; });
-    generateButton?.addEventListener('click', () => generateDraft(true));
-    saveButton?.addEventListener('click', saveSummary);
-    refreshButton?.addEventListener('click', loadHistory);
-    updateSummary();
-    loadHistory();
-  </script>
 </BaseLayout>

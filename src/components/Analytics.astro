@@ -1,0 +1,123 @@
+---
+type Props = {
+  enabled?: boolean;
+};
+
+const { enabled = true } = Astro.props;
+const gaMeasurementId = enabled ? import.meta.env.PUBLIC_GA_MEASUREMENT_ID : undefined;
+const cloudflareWebAnalyticsToken = enabled ? import.meta.env.PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN : undefined;
+const clarityProjectId = enabled ? import.meta.env.PUBLIC_CLARITY_PROJECT_ID : undefined;
+const cloudflareBeaconConfig = cloudflareWebAnalyticsToken
+  ? JSON.stringify({ token: cloudflareWebAnalyticsToken })
+  : undefined;
+---
+{
+  gaMeasurementId && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
+      <script is:inline define:vars={{ gaMeasurementId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', gaMeasurementId, {
+          page_path: window.location.pathname,
+          page_title: document.title
+        });
+      </script>
+    </>
+  )
+}
+{
+  cloudflareBeaconConfig && (
+    <script
+      is:inline
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={cloudflareBeaconConfig}
+    />
+  )
+}
+{
+  clarityProjectId && (
+    <script is:inline define:vars={{ clarityProjectId }}>
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = 'https://www.clarity.ms/tag/' + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, 'clarity', 'script', clarityProjectId);
+    </script>
+  )
+}
+{
+  enabled && (
+    <script is:inline>
+      const normalizeAnalyticsUrl = (url) => {
+        if (!url || url.startsWith('mailto:') || url.startsWith('tel:')) {
+          return undefined;
+        }
+
+        try {
+          const parsedUrl = new URL(url, window.location.href);
+          return parsedUrl.origin === window.location.origin
+            ? parsedUrl.pathname
+            : parsedUrl.origin + parsedUrl.pathname;
+        } catch {
+          return undefined;
+        }
+      };
+
+      const trackAnalyticsEvent = (eventName, params = {}) => {
+        const payload = {
+          event_category: 'engagement',
+          page_path: window.location.pathname,
+          page_title: document.title,
+          ...params
+        };
+
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', eventName, payload);
+        }
+
+        if (typeof window.clarity === 'function') {
+          window.clarity('event', eventName);
+        }
+      };
+
+      window.rubyHitomiAnalytics = {
+        track: trackAnalyticsEvent
+      };
+
+      document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element ? event.target.closest('a,button,[data-analytics-event],[data-ga-event]') : null;
+        if (!target) return;
+
+        const explicitEvent = target.dataset?.analyticsEvent || target.dataset?.gaEvent;
+        const anchor = target instanceof HTMLAnchorElement ? target : target.closest('a');
+        const href = anchor instanceof HTMLAnchorElement ? anchor.href : undefined;
+        const normalizedUrl = normalizeAnalyticsUrl(href);
+        const eventName =
+          explicitEvent ||
+          (normalizedUrl?.includes('line.me') ? 'line_click' : undefined) ||
+          (normalizedUrl?.includes('stores.jp') ? 'stores_booking_click' : undefined) ||
+          (anchor && normalizedUrl ? 'link_click' : undefined);
+
+        if (!eventName) return;
+
+        trackAnalyticsEvent(eventName, {
+          link_text: target.textContent?.trim() || undefined,
+          link_url: normalizedUrl
+        });
+      });
+    </script>
+  )
+}
